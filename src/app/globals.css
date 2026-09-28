@@ -44,9 +44,9 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-lg: var(--vng-radius-lg);
+  --radius-md: var(--vng-radius-md);
+  --radius-sm: var(--vng-radius-sm);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -97,54 +97,106 @@
   }
 
   :root {
-    --background: var(--color-white);
-    --foreground: var(--color-zinc-950);
+    /* Shared VengeanceUI tokens. Override these in your own stylesheet. */
+    --vng-background: var(--color-white);
+    --vng-foreground: var(--color-zinc-950);
+    --vng-border: var(--color-zinc-200);
+    --vng-primary: var(--color-zinc-950);
+    --vng-primary-hover: var(--color-zinc-800);
+    --vng-primary-foreground: var(--color-white);
+    --vng-secondary: var(--color-zinc-100);
+    --vng-secondary-foreground: var(--color-zinc-950);
+    --vng-danger: var(--color-red-600);
+    --vng-success: var(--color-green-600);
+    --vng-warning: var(--color-yellow-500);
+    --vng-radius-sm: 4px;
+    --vng-radius-md: 6px;
+    --vng-radius-lg: 8px;
+    --vng-space-xs: 0.5rem;
+    --vng-space-sm: 0.75rem;
+    --vng-space-md: 1rem;
+    --vng-space-lg: 2rem;
+    --vng-transition-speed: 150ms;
+    --vng-transition-speed-slow: calc(var(--vng-transition-speed) * 2);
+
+    --background: var(--vng-background);
+    --foreground: var(--vng-foreground);
     --card: var(--color-white);
     --card-foreground: var(--color-zinc-950);
     --popover: var(--color-white);
     --popover-foreground: var(--color-zinc-950);
-    --primary: var(--color-zinc-950);
-    --primary-foreground: var(--color-white);
-    --secondary: var(--color-zinc-100);
-    --secondary-foreground: var(--color-zinc-950);
+    --primary: var(--vng-primary);
+    --primary-foreground: var(--vng-primary-foreground);
+    --secondary: var(--vng-secondary);
+    --secondary-foreground: var(--vng-secondary-foreground);
     --muted: var(--color-zinc-100);
     --muted-foreground: var(--color-zinc-500);
     --accent: var(--color-zinc-100);
     --accent-foreground: var(--color-zinc-950);
-    --destructive: var(--color-red-600);
+    --destructive: var(--vng-danger);
     --destructive-foreground: var(--color-white);
-    --border: var(--color-zinc-200);
+    --border: var(--vng-border);
     --input: var(--color-zinc-200);
-    --ring: var(--color-zinc-950);
+    --ring: var(--vng-primary);
     --chart-1: var(--color-blue-500);
     --chart-2: var(--color-indigo-500);
     --chart-3: var(--color-purple-500);
     --chart-4: var(--color-indigo-400);
     --chart-5: var(--color-red-500);
-    --radius: 0.5rem
+    --radius: var(--vng-radius-lg);
   }
 
   .dark {
-    --background: var(--color-zinc-950);
-    --foreground: var(--color-white);
+    --vng-background: var(--color-zinc-950);
+    --vng-foreground: var(--color-white);
+    --vng-border: var(--color-zinc-800);
+    --vng-primary: var(--color-white);
+    --vng-primary-hover: var(--color-zinc-200);
+    --vng-primary-foreground: var(--color-zinc-950);
+    --vng-secondary: var(--color-zinc-800);
+    --vng-secondary-foreground: var(--color-white);
+
+    --background: var(--vng-background);
+    --foreground: var(--vng-foreground);
     --card: var(--color-zinc-950);
     --card-foreground: var(--color-white);
     --popover: var(--color-zinc-950);
     --popover-foreground: var(--color-white);
-    --primary: var(--color-white);
-    --primary-foreground: var(--color-zinc-950);
-    --secondary: var(--color-zinc-800);
-    --secondary-foreground: var(--color-white);
+    --primary: var(--vng-primary);
+    --primary-foreground: var(--vng-primary-foreground);
+    --secondary: var(--vng-secondary);
+    --secondary-foreground: var(--vng-secondary-foreground);
     --muted: var(--color-zinc-800);
     --muted-foreground: var(--color-zinc-400);
     --accent: var(--color-zinc-800);
     --accent-foreground: var(--color-white);
-    --destructive: var(--color-red-600);
+    --destructive: var(--vng-danger);
     --destructive-foreground: var(--color-white);
-    --border: var(--color-zinc-800);
+    --border: var(--vng-border);
     --input: var(--color-zinc-800);
-    --ring: var(--color-white);
+    --ring: var(--vng-primary);
   }
+
+  /* Shiki Dual-Theming Support for Tailwind */
+  .shiki, .shiki span {
+    color: var(--shiki-light);
+    font-style: var(--shiki-light-font-style);
+    font-weight: var(--shiki-light-font-weight);
+    text-decoration: var(--shiki-light-text-decoration);
+  }
+
+  .dark .shiki, .dark .shiki span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+  
+  /* Ensure the pre tag background remains transparent so our container styles shine through */
+  .shiki {
+    background-color: transparent !important;
+  }
+
 
   * {
     @apply border-border outline-ring/50;
@@ -178,7 +230,7 @@
 
   /* Snappier link/button transitions */
   a, button {
-    transition-duration: 100ms;
+    transition-duration: var(--vng-transition-speed);
   }
 
   /* GPU-composite only the heavy animated containers so they don't
@@ -196,7 +248,7 @@
 
   .line {
     counter-increment: css-counter 1;
-    @apply relative pl-7 before:absolute before:text-white/20 before:inset-y-0 before:transition-colors before:duration-200 before:content-[counter(css-counter)] before:text-xs before:left-0 before:my-auto hover:before:text-white
+    @apply relative pl-7 before:absolute before:text-black/20 dark:before:text-white/20 before:inset-y-0 before:transition-colors before:duration-200 before:content-[counter(css-counter)] before:text-xs before:left-0 before:my-auto hover:before:text-black dark:hover:before:text-white;
   }
 }
 
@@ -661,37 +713,4 @@
 
 .dark .spotlight-nav-shadow {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
-}
-
-/* Fullscreen Custom Video Player overrides */
-.video-player-container:fullscreen {
-  width: 100vw !important;
-  height: 100vh !important;
-  aspect-ratio: auto !important;
-  background-color: #000000 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.video-player-container:fullscreen video {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100vw !important;
-  max-height: 100vh !important;
-  object-fit: contain !important;
-}
-
-.video-player-container:fullscreen .controls-overlay {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 50 !important;
-  padding-bottom: 24px !important;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%) !important;
-}
-
-.video-player-container:fullscreen .border-beam {
-  display: none !important;
 }

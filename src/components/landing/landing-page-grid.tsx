@@ -144,7 +144,7 @@ function InteractionBuilderCell({
   const checks = ["CLI install", "Preview state", "Dark ready"];
 
   return (
-    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 md:border-r lg:row-span-2 lg:min-h-0 lg:border-r">
+    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 md:border-r xl:row-span-2 xl:min-h-0">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md border bg-background/70 text-muted-foreground">
@@ -296,7 +296,7 @@ function MotionHubCell({
   ];
 
   return (
-    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 lg:row-span-2 lg:min-h-0 lg:border-x">
+    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 xl:row-span-2 xl:min-h-0 xl:border-x">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md border bg-background/70 text-muted-foreground">
@@ -484,7 +484,9 @@ function SystemActionPill({
 }) {
   return (
     <Link
-      className={`system-action absolute z-30 flex h-10 items-center gap-2 rounded-lg border border-white/85 bg-white/88 px-2.5 pr-4 font-mono text-[9px] text-zinc-800 shadow-[0_14px_36px_-28px_rgba(24,24,27,0.72),inset_0_1px_0_rgba(255,255,255,0.88)] backdrop-blur-sm transition-transform hover:-translate-y-0.5 dark:border-white/[0.075] dark:bg-[#06070a]/88 dark:text-zinc-300 dark:shadow-[0_14px_36px_-30px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.045)] ${className}`}
+      aria-label={label}
+      title={label}
+      className={`system-action absolute z-30 flex h-10 items-center gap-2 rounded-lg border border-white/85 bg-white/88 px-2.5 font-mono text-[9px] text-zinc-800 shadow-[0_14px_36px_-28px_rgba(24,24,27,0.72),inset_0_1px_0_rgba(255,255,255,0.88)] backdrop-blur-sm transition-transform hover:-translate-y-0.5 dark:border-white/[0.075] dark:bg-[#06070a]/88 dark:text-zinc-300 dark:shadow-[0_14px_36px_-30px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.045)] md:pr-4 xl:pr-2.5 ${className}`}
       href={href}
       style={{ animationDelay: delay }}
     >
@@ -493,7 +495,7 @@ function SystemActionPill({
       >
         <Icon className="size-3.5" />
       </span>
-      <span className="whitespace-nowrap">{label}</span>
+      <span className="hidden whitespace-nowrap md:inline xl:hidden">{label}</span>
     </Link>
   );
 }
@@ -506,7 +508,7 @@ function SystemComposerCell({
   scenesFamily: LibraryFamily;
 }) {
   return (
-    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 lg:row-span-2 lg:min-h-0">
+    <div className="group relative z-20 flex min-h-[492px] flex-col border-b bg-card/30 p-4 transition-colors hover:bg-muted/10 dark:bg-background/45 md:col-span-2 xl:col-span-1 xl:row-span-2 xl:min-h-0">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md border bg-background/70 text-muted-foreground">
@@ -591,7 +593,7 @@ function SystemComposerCell({
           </svg>
 
           <SystemActionPill
-            className="left-[-3%] top-[25%]"
+            className="left-[5%] top-[25%]"
             delay="-0.4s"
             href={scenesFamily.href}
             icon={MessageCircle}
@@ -599,7 +601,7 @@ function SystemComposerCell({
             label="Choose layer"
           />
           <SystemActionPill
-            className="left-[8%] top-[43%]"
+            className="left-[5%] top-[43%]"
             delay="-1.1s"
             href={layoutFamily.href}
             icon={ImageIcon}
@@ -607,7 +609,7 @@ function SystemComposerCell({
             label="Compose card"
           />
           <SystemActionPill
-            className="left-[-4%] top-[62%]"
+            className="left-[5%] top-[62%]"
             delay="-1.8s"
             href="/docs/cli"
             icon={Code2}
@@ -616,7 +618,7 @@ function SystemComposerCell({
           />
 
           <SystemActionPill
-            className="right-[-4%] top-[25%]"
+            className="right-[5%] top-[25%]"
             delay="-0.8s"
             href={layoutFamily.href}
             icon={Flag}
@@ -624,7 +626,7 @@ function SystemComposerCell({
             label="Map layout"
           />
           <SystemActionPill
-            className="right-[9%] top-[43%]"
+            className="right-[5%] top-[43%]"
             delay="-1.5s"
             href={scenesFamily.items[0].href}
             icon={FileText}
@@ -632,7 +634,7 @@ function SystemComposerCell({
             label="Preview scene"
           />
           <SystemActionPill
-            className="right-[-3%] top-[62%]"
+            className="right-[5%] top-[62%]"
             delay="-2.2s"
             href={layoutFamily.items[0].href}
             icon={BarChart3}
@@ -735,7 +737,7 @@ function FlowLayer() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[15] hidden h-full w-full overflow-visible text-sky-500/20 dark:text-cyan-300/16 lg:block"
+      className="pointer-events-none absolute inset-0 z-[15] hidden h-full w-full overflow-visible text-sky-500/20 dark:text-cyan-300/16 xl:block"
       preserveAspectRatio="none"
       viewBox="0 0 300 200"
     >
@@ -774,7 +776,7 @@ function PreviewMatrix() {
     libraryFamilies;
 
   return (
-    <div className="relative grid border-b md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[270px_270px]">
+    <div className="relative grid border-b md:grid-cols-2 xl:grid-cols-3 xl:grid-rows-[270px_270px]">
       <FlowLayer />
       <InteractionBuilderCell
         buttonsFamily={buttons}

@@ -450,7 +450,7 @@ export const marketingPages = {
     secondaryAction: { label: "Back to docs", href: "/docs", icon: BookOpen },
     stats: [
       { value: "No", label: "accounts" },
-      { value: "No", label: "payments" },
+      { value: "Stripe", label: "payments" },
       { value: "Public", label: "repo" },
     ],
     featuresTitle: "Policy summary",
@@ -463,13 +463,13 @@ export const marketingPages = {
         icon: UserRound,
       },
       {
-        title: "No payment data",
-        description: "The public site does not collect billing details or process purchases.",
+        title: "Stripe-hosted payments",
+        description: "Sponsorship checkout runs on Stripe. Vengeance UI does not receive or store your card details.",
         icon: ShieldCheck,
       },
       {
         title: "External platforms",
-        description: "GitHub, Vercel, and social links may process data under their own policies.",
+        description: "Stripe, GitHub, Vercel, and social links may process data under their own policies.",
         icon: GitBranch,
       },
     ],
@@ -478,7 +478,8 @@ export const marketingPages = {
       "The site can still be served by hosting and analytics infrastructure, so this policy explains the practical boundaries.",
     details: [
       { label: "Site logs", text: "Hosting providers may keep standard request logs for security and reliability." },
-      { label: "External links", text: "Leaving the site for GitHub, Vercel, or X means their policies apply." },
+      { label: "Sponsorships", text: "Stripe handles billing and sends the display name, website, and optional logo URL you submit. Approved details are shown publicly while the sponsorship is active." },
+      { label: "External services", text: "Stripe Checkout, GitHub, Vercel, and X each process data under their own policies." },
       { label: "Contact", text: "Information you choose to include in GitHub issues or messages is visible wherever you post it." },
     ],
     timelineTitle: "Visitor choices",
@@ -515,8 +516,8 @@ export const marketingPages = {
         icon: BookOpen,
       },
       {
-        title: "Report issues clearly",
-        description: "Bug reports should include enough detail for maintainers to reproduce the behavior.",
+        title: "Sponsorships renew monthly",
+        description: "Paid sponsorships use monthly Stripe billing. Display details are reviewed before publication.",
         icon: LifeBuoy,
       },
     ],
@@ -526,6 +527,8 @@ export const marketingPages = {
     details: [
       { label: "Availability", text: "The public site may change, move, or temporarily fail while the project evolves." },
       { label: "Examples", text: "Demos are examples, not a guarantee that every use case is production-ready unchanged." },
+      { label: "Subscriptions", text: "The price and billing interval are shown before payment. Use the Stripe customer portal to manage or cancel a subscription; Stripe shows when cancellation takes effect." },
+      { label: "Placement", text: "Sponsor names, links, and logos are reviewed before they appear. Contact us if your submitted details need changing or a placement cannot be completed." },
       { label: "Third parties", text: "External links and dependencies are governed by their own terms." },
     ],
     timelineTitle: "Common sense rules",

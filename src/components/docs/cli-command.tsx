@@ -1,9 +1,8 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
+import { CopyButton } from "@/components/ui/copy-button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 import React from "react";
 import {
     getRegistryItemUrl,
@@ -56,44 +55,28 @@ const packageManagerConfig: Record<PackageManager, { icon: React.ReactNode; labe
 
 export function CLICommand({ componentName, className }: CLICommandProps) {
     const [activeTab, setActiveTab] = React.useState<PackageManager>("npm");
-    const [copied, setCopied] = React.useState(false);
-    const { resolvedTheme } = useTheme();
-
-    const copyToClipboard = async () => {
-        await navigator.clipboard.writeText(getShadcnAddCommand(componentName, activeTab));
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     // Parse command for syntax highlighting
     const renderHighlightedCommand = () => {
         const command = PACKAGE_MANAGER_EXECUTORS[activeTab];
         const parts = command.split(" ");
-        const isDark = resolvedTheme === "dark";
         const registryUrl = getRegistryItemUrl(componentName);
-
-        const colors = {
-            keyword: isDark ? "#a0a0cc" : "#6b6b99",
-            pkg: isDark ? "#8bb8d0" : "#4a7f94",
-            sub: isDark ? "#a1a1aa" : "#71717a",
-            str: isDark ? "#c9a87c" : "#8a6d3b",
-        };
 
         return (
             <code className="text-sm font-mono leading-relaxed">
-                <span style={{ color: colors.keyword }}>{parts[0]}</span>
+                <span className="text-[#6b6b99] dark:text-[#a0a0cc]">{parts[0]}</span>
                 {parts[1] && (
                     <>
                         {" "}
-                        <span style={{ color: colors.keyword }}>{parts[1]}</span>
+                        <span className="text-[#6b6b99] dark:text-[#a0a0cc]">{parts[1]}</span>
                     </>
                 )}
                 {" "}
-                <span style={{ color: colors.pkg }}>shadcn@latest</span>
+                <span className="text-cyan-800 dark:text-[#8bb8d0]">shadcn@latest</span>
                 {" "}
-                <span style={{ color: colors.sub }}>add</span>
+                <span className="text-[#71717a] dark:text-[#a1a1aa]">add</span>
                 {" "}
-                <span style={{ color: colors.str }}>{registryUrl}</span>
+                <span className="text-[#8a6d3b] dark:text-[#c9a87c]">{registryUrl}</span>
             </code>
         );
     };
@@ -106,8 +89,8 @@ export function CLICommand({ componentName, className }: CLICommandProps) {
             className
         )}>
             {/* Tab bar */}
-            <div className="flex items-center justify-between px-3 py-2.5 border-b border-neutral-200 dark:border-[#222] bg-white dark:bg-zinc-900/80">
-                <div className="flex items-center gap-6">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-neutral-200 dark:border-[#222] bg-white dark:bg-zinc-900/80">
+                <div className="flex items-center gap-2 sm:gap-4">
                     {(Object.keys(packageManagerConfig) as PackageManager[]).map((pm) => {
                         const isActive = activeTab === pm;
                         return (
@@ -115,7 +98,7 @@ export function CLICommand({ componentName, className }: CLICommandProps) {
                                 key={pm}
                                 onClick={() => setActiveTab(pm)}
                                 className={cn(
-                                    "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-none transition-colors select-none z-10",
+                                    "relative flex items-center gap-2 px-3 py-1 text-sm font-medium rounded-none transition-colors select-none z-10",
                                     isActive
                                         ? "text-neutral-900 dark:text-white"
                                         : "text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
@@ -124,7 +107,7 @@ export function CLICommand({ componentName, className }: CLICommandProps) {
                                 {isActive && (
                                     <motion.div
                                         layoutId="active-pill"
-                                        className="absolute bottom-[-11px] left-0 right-0 h-[2px] bg-neutral-900 dark:bg-white"
+                                        className="absolute bottom-[-7px] left-0 right-0 h-[2px] bg-neutral-900 dark:bg-white"
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
@@ -136,21 +119,10 @@ export function CLICommand({ componentName, className }: CLICommandProps) {
                 </div>
 
                 {/* Copy button */}
-                <button
-                    onClick={copyToClipboard}
-                    className={cn(
-                        "p-2 rounded-md transition-colors",
-                        "text-neutral-400 dark:text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300",
-                        "hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                    )}
-                    aria-label="Copy command"
-                >
-                    {copied ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                    ) : (
-                        <Copy className="h-4 w-4" />
-                    )}
-                </button>
+                <CopyButton
+                    code={getShadcnAddCommand(componentName, activeTab)}
+                    className="h-7 w-7 border-none bg-transparent text-neutral-400 transition-all hover:bg-neutral-100 hover:text-neutral-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 [&>svg]:w-3.5 [&>svg]:h-3.5"
+                />
             </div>
 
             {/* Command */}

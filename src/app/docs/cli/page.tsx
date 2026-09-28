@@ -89,10 +89,10 @@ Options:
         </DocsParagraph>
         <PackageCommand
           commands={{
-            npm: "npx shadcn@latest add https://www.vengenceui.com/r/animated-rays.json -c ./apps/web",
-            pnpm: "pnpm dlx shadcn@latest add https://www.vengenceui.com/r/animated-rays.json -c ./apps/web",
-            yarn: "yarn dlx shadcn@latest add https://www.vengenceui.com/r/animated-rays.json -c ./apps/web",
-            bun: "bunx shadcn@latest add https://www.vengenceui.com/r/animated-rays.json -c ./apps/web",
+            npm: `${addAnimatedRaysCommand} -c ./apps/web`,
+            pnpm: `${addAnimatedRaysCommand.replace(/^npx/, "pnpm dlx")} -c ./apps/web`,
+            yarn: `${addAnimatedRaysCommand.replace(/^npx/, "yarn dlx")} -c ./apps/web`,
+            bun: `${addAnimatedRaysCommand.replace(/^npx/, "bunx")} -c ./apps/web`,
           }}
         />
       </DocsSection>
@@ -106,7 +106,7 @@ Options:
           title="components.json"
           code={`{
   "registries": {
-    "@vengeanceui": "https://www.vengenceui.com/r/{name}.json"
+    "@vengeanceui": "https://raw.githubusercontent.com/Ashutoshx7/VengeanceUI/main/public/r/{name}.json"
   }
 }`}
         />
@@ -118,6 +118,67 @@ Options:
             bun: "bunx shadcn@latest add @vengeanceui/animated-rays",
           }}
         />
+      </DocsSection>
+
+      <DocsSection title="Agent skill + MCP">
+        <DocsParagraph>
+          Install the VengeanceUI agent skill, MCP server config, and
+          instructions. In a terminal, <InlineCode>init</InlineCode> lets you
+          arrow through Cursor, Claude, both, or MCP only, then confirm MCP
+          config.
+        </DocsParagraph>
+        <PackageCommand
+          commands={{
+            npm: "npx vengeanceui init",
+            pnpm: "pnpm dlx vengeanceui init",
+            yarn: "yarn dlx vengeanceui init",
+            bun: "bunx vengeanceui init",
+          }}
+        />
+        <DocsCodeBlock
+          code={`? Agent
+❯ Cursor     skill, AGENTS.md
+  Claude     skill, CLAUDE.md
+  Both       Cursor + Claude
+  MCP only   server config
+
+? Configure MCP server? (Y/n)`}
+        />
+        <DocsParagraph>
+          Skip the prompts with a target, or <InlineCode>-y</InlineCode> for
+          Cursor + Claude + MCP (also the default when stdin is not a TTY):
+        </DocsParagraph>
+        <DocsCodeBlock
+          code={`npx vengeanceui init cursor
+npx vengeanceui init claude
+npx vengeanceui init mcp
+npx vengeanceui init -y`}
+        />
+        <DocsParagraph>
+          MCP configs use <InlineCode>npx -y vengeanceui-mcp</InlineCode>. This
+          does not replace shadcn <InlineCode>init</InlineCode> /{" "}
+          <InlineCode>add</InlineCode> for installing components.
+        </DocsParagraph>
+        <DocsParagraph>
+          Contributors cloning this repo can keep using a local MCP build at{" "}
+          <InlineCode>packages/mcp</InlineCode>:
+        </DocsParagraph>
+        <DocsCodeBlock
+          title=".cursor/mcp.json"
+          code={`{
+  "mcpServers": {
+    "vengeance-ui": {
+      "command": "node",
+      "args": ["\${workspaceFolder}/packages/mcp/dist/index.js"]
+    }
+  }
+}`}
+        />
+        <DocsParagraph>
+          Build the server first:{" "}
+          <InlineCode>cd packages/mcp && npm install && npm run build</InlineCode>
+          .
+        </DocsParagraph>
       </DocsSection>
     </DocsArticle>
   );

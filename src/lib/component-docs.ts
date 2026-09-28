@@ -1,5 +1,14 @@
 import type { PropDef } from "@/components/docs/props-table";
 
+export interface ComponentCredit {
+  author: string;
+  github?: string;
+  twitter?: string;
+  linkedin?: string;
+  description?: string;
+  role?: string;
+}
+
 export interface ComponentDocData {
   /** npm dependencies to install (e.g. "npm install framer-motion clsx tailwind-merge") */
   dependencies: string;
@@ -13,6 +22,8 @@ export interface ComponentDocData {
   props: PropDef[];
   /** Additional props sections (e.g. nested configs like metalConfig) */
   additionalPropSections?: { title: string; data: PropDef[] }[];
+  /** Optional credit section for the component author */
+  credits?: ComponentCredit | ComponentCredit[];
 }
 
 /**
@@ -24,6 +35,145 @@ export interface ComponentDocData {
  *   4. Props table
  */
 export const COMPONENT_DOCS: Record<string, ComponentDocData> = {
+  "team-reveal-grid": {
+    dependencies: "npm install clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "This is a client component because it manages the active team member and optional automatic rotation.",
+      "Each member accepts a regular image URL. When no image is provided, the component renders a polished initial-based portrait.",
+      "Pointer, touch, and keyboard input all update the same controlled or uncontrolled active state.",
+      "The layout responds to its own container, adapts to light and dark themes, and respects reduced-motion preferences.",
+    ],
+    usageCode: `"use client"
+
+import { TeamRevealGrid } from "@/components/ui/team-reveal-grid"
+
+const members = [
+  {
+    id: "maya",
+    name: "Maya Chen",
+    role: "Product Engineer",
+    expertise: "Turns early product ideas into resilient interfaces.",
+    image: "/team/maya.jpg",
+    accent: "#fb4f43",
+  },
+  // Add more team members...
+]
+
+export function TeamSection() {
+  return (
+    <TeamRevealGrid
+      members={members}
+      title="Meet the team"
+      defaultActiveMemberId="maya"
+      onActiveMemberChange={(id) => console.log({ id })}
+    />
+  )
+}`,
+    props: [
+      { prop: "eyebrow", type: "string", defaultValue: "'The people behind the product'", description: "Small label displayed above the heading." },
+      { prop: "title", type: "string", defaultValue: "'Meet the team'", description: "Main section heading with an animated underline." },
+      { prop: "description", type: "string", defaultValue: "team description", description: "Supporting copy below the heading." },
+      { prop: "members", type: "readonly TeamRevealMember[]", defaultValue: "six sample members", description: "Team profiles, roles, expertise, images, and accents." },
+      { prop: "activeMemberId", type: "string | null", defaultValue: "-", description: "Controlled id of the revealed member." },
+      { prop: "defaultActiveMemberId", type: "string | null", defaultValue: "first member", description: "Initial revealed member when uncontrolled." },
+      { prop: "onActiveMemberChange", type: "(memberId: string | null) => void", defaultValue: "-", description: "Called when pointer, keyboard, touch, or autoplay selects a member." },
+      { prop: "autoPlay", type: "boolean", defaultValue: "true", description: "Cycles the reveal while the component is idle." },
+      { prop: "rotationInterval", type: "number", defaultValue: "2800", description: "Milliseconds between automatic member changes; values below 1200 are clamped." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the section root." },
+    ],
+    additionalPropSections: [
+      {
+        title: "TeamRevealMember",
+        data: [
+          { prop: "id", type: "string", defaultValue: "-", description: "Stable member identifier." },
+          { prop: "name", type: "string", defaultValue: "-", description: "Member name and image fallback label." },
+          { prop: "role", type: "string", defaultValue: "-", description: "Member role." },
+          { prop: "expertise", type: "string", defaultValue: "-", description: "Short detail revealed by the active card." },
+          { prop: "image", type: "string", defaultValue: "-", description: "Optional local path, data URL, or remote image URL." },
+          { prop: "imageAlt", type: "string", defaultValue: "member name", description: "Optional image alternative text." },
+          { prop: "imagePosition", type: "string", defaultValue: "'center top'", description: "CSS object-position value for portrait cropping." },
+          { prop: "accent", type: "string", defaultValue: "'#fb4f43'", description: "Any CSS color used for the active treatment." },
+        ],
+      },
+    ],
+    credits: {
+      author: "Rohit Mehta",
+      twitter: "https://x.com/rohitmehta_twt",
+      description: "Designed the original Team Reveal Grid component aesthetic.",
+    },
+  },
+  "why-us-bento": {
+    dependencies: "npm install framer-motion @phosphor-icons/react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "This client component presents a feature bento grid with isometric graphics, card stack rotation, avatar hover expansion, and animated pipeline arrows.",
+      "Uses Framer Motion variants for hover micro-animations across all five grid cards.",
+      "The team avatar stack accepts customizable character image URLs (defaults to Aizen, Batman, Johan, Shinji, etc.).",
+      "Fully responsive layout supporting both light and dark themes.",
+    ],
+    usageCode: `"use client"
+
+import { WhyUsBento } from "@/components/ui/why-us-bento"
+
+export function FeatureSection() {
+  return (
+    <WhyUsBento />
+  )
+}`,
+    props: [
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the outer container section." },
+      { prop: "teamAvatars", type: "string[]", defaultValue: "character avatars", description: "Array of avatar image URLs displayed in card 03." },
+    ],
+  },
+  "research-bento-grid": {
+    dependencies: "npm install framer-motion react-icons clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "This is a client component because the design selector and pause control keep interactive state.",
+      "The grid responds to its own container: it stacks in narrow placements and switches to an asymmetric twelve-column layout once enough space is available.",
+      "Wide and fullscreen placements center the same compact 1120px two-row composition instead of stretching the cards across the viewport.",
+      "Colors automatically follow the parent light or dark theme while preserving the neon interaction accent.",
+      "Motion automatically respects the user's reduced-motion preference.",
+      "Pricing, currency, brands, copy, labels, animation timing, and interactive state are all configurable through typed props.",
+    ],
+    usageCode: `import { ResearchBentoGrid } from "@/components/ui/research-bento-grid"
+
+export function DeveloperServiceShowcase() {
+  return (
+    <div className="h-[680px] w-full">
+      <ResearchBentoGrid
+        monthlyPrice={1990}
+        previousPrice={32000}
+        currency="USD"
+        defaultSelectedBrand={0}
+        onPausedChange={(paused) => console.log({ paused })}
+        onSelectedBrandChange={(index) => console.log({ index })}
+      />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "monthlyPrice", type: "number", defaultValue: "1990", description: "Highlighted subscription price shown on the invoice." },
+      { prop: "previousPrice", type: "number", defaultValue: "32000", description: "Struck-through comparison price shown beside the subscription price." },
+      { prop: "currency", type: "string", defaultValue: "'USD'", description: "ISO 4217 currency code used to format invoice prices." },
+      { prop: "locale", type: "string", defaultValue: "'en-US'", description: "Locale passed to Intl.NumberFormat for invoice prices." },
+      { prop: "paused", type: "boolean", defaultValue: "-", description: "Controlled Pause or Resume state." },
+      { prop: "defaultPaused", type: "boolean", defaultValue: "false", description: "Initial state of the Pause or Resume control." },
+      { prop: "selectedBrand", type: "number", defaultValue: "-", description: "Controlled index of the selected developer brand." },
+      { prop: "defaultSelectedBrand", type: "number", defaultValue: "1", description: "Initial selected brand index when uncontrolled." },
+      { prop: "brands", type: "readonly ResearchBentoBrand[]", defaultValue: "developer brands", description: "One or more named icon components displayed in the showcase." },
+      { prop: "copy", type: "Partial<ResearchBentoGridCopy>", defaultValue: "developer copy", description: "Overrides card titles and descriptions." },
+      { prop: "autoPlay", type: "boolean", defaultValue: "true", description: "Enables automatic brand rotation, invoice cycling, and cursor spotlight animation." },
+      { prop: "brandRotationInterval", type: "number", defaultValue: "2600", description: "Milliseconds between automatic brand selections." },
+      { prop: "spotlightInterval", type: "number", defaultValue: "4400", description: "Milliseconds between automatic Pause-button spotlight cycles." },
+      { prop: "userLabel", type: "string", defaultValue: "'You'", description: "Label displayed beside the active cursor." },
+      { prop: "collaboratorLabel", type: "string", defaultValue: "'X7'", description: "Label displayed beside the collaborator cursor." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the component root." },
+      { prop: "onPausedChange", type: "(paused: boolean) => void", defaultValue: "-", description: "Called whenever the subscription pause state changes." },
+      { prop: "onSelectedBrandChange", type: "(index: number) => void", defaultValue: "-", description: "Called whenever a brand is selected manually or automatically." },
+    ],
+  },
   "my-animated-button": {
     dependencies: "npm install framer-motion clsx tailwind-merge",
     includeUtils: true,
@@ -42,6 +192,30 @@ export function AnimatedButtonDemo() {
       { prop: "as", type: "string", defaultValue: "'button'", description: "The HTML element or motion element to render as." },
       { prop: "whileTap", type: "TargetAndTransition", defaultValue: "{ scale: 0.97 }", description: "Framer Motion animation properties for the tap (click) state." },
       { prop: "transition", type: "Transition", defaultValue: "{ ...spring }", description: "Framer Motion transition configuration." },
+    ],
+  },
+
+  "stats-counter": {
+    dependencies: "npm install framer-motion clsx tailwind-merge",
+    includeUtils: true,
+    usageCode: `import StatsCounter from "@/components/ui/stats-counter"
+
+export function StatsCounterDemo() {
+  return (
+    <StatsCounter
+      value={12000}
+      suffix="+"
+      duration={2}
+    />
+  )
+}`,
+    props: [
+      { prop: "value", type: "number", defaultValue: "-", description: "The target number to count up to." },
+      { prop: "duration", type: "number", defaultValue: "1.5", description: "Duration of the count-up animation in seconds." },
+      { prop: "prefix", type: "string", defaultValue: "''", description: "Text shown before the number (e.g. '$')." },
+      { prop: "suffix", type: "string", defaultValue: "''", description: "Text shown after the number (e.g. '+', '%')." },
+      { prop: "decimals", type: "number", defaultValue: "0", description: "Number of decimal places to display." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes to apply." },
     ],
   },
 
@@ -171,7 +345,78 @@ export function AsciiGlitchRippleDemo() {
       { prop: "dur", type: "number", defaultValue: "1000", description: "Duration of the scramble animation wave in milliseconds." },
       { prop: "chars", type: "string", defaultValue: "'.,·-─~+:;=*π\"\"┐┌┘┴┬╗╔╝╚╬╠╣╩╦║░▒▓█▄▀▌▐■!?&#$@0123456789*'", description: "Character set used for the glitch scrambling effect." },
       { prop: "preserveSpaces", type: "boolean", defaultValue: "true", description: "Whether to keep original spaces unscrambled." },
-      { prop: "spread", type: "number", defaultValue: "1.0", description: "Spread factor controlling the speed and width of the ripple wave." },
+      { prop: "spread", type: "number", defaultValue: "1.2", description: "The width/dispersion of the transition wave." },
+    ],
+  },
+
+  "stagger-text": {
+    dependencies: "npm install framer-motion",
+    usageCode: `import TextAnimation from "@/components/ui/staggerText"
+
+export function StaggerTextDemo() {
+  return (
+    <div className="text-xl font-medium">
+      <TextAnimation divideBy="word" delay={0.2}>
+        This text animates word by word.
+      </TextAnimation>
+    </div>
+  )
+}`,
+    props: [
+      { prop: "children", type: "React.ReactNode", defaultValue: "-", description: "The text content to animate." },
+      { prop: "divideBy", type: "'word' | 'letter'", defaultValue: "'word'", description: "Specifies whether to split and animate the text by words or by individual letters." },
+      { prop: "delay", type: "number", defaultValue: "0", description: "Initial delay before the animation starts in seconds." },
+    ],
+    credits: {
+      author: "dubyyy",
+      github: "https://github.com/dubyyy",
+      twitter: "https://x.com/dubemtheking",
+      description: "Designed and contributed the Stagger Text component to the Vengeance UI catalog."
+    },
+  },
+
+  "gooey-text-reveal": {
+    dependencies: "npm install gsap @gsap/react",
+    manualNotes: [
+      "This is a client component because GSAP splits and animates rendered DOM text.",
+      "Direct child elements are animated automatically. Add data-gooey-reveal-item to target specific nested elements.",
+      "Pass a scrollable element or ref through scroller when the component lives inside a modal, panel, or nested scroll area.",
+      "The component respects prefers-reduced-motion and rebuilds its line split when the container width changes.",
+      "The reveal does not set a text color, so it automatically inherits your light or dark theme color.",
+    ],
+    usageCode: `import { GooeyTextReveal } from "@/components/ui/gooey-text-reveal"
+
+export function GooeyTextRevealExample() {
+  return (
+    <GooeyTextReveal
+      mode="scroll"
+      duration={1.4}
+      stagger={0.12}
+      blurAmount={0.4}
+      className="max-w-4xl"
+    >
+      <h2 className="text-6xl font-semibold leading-none">
+        Old light takes its time becoming visible.
+      </h2>
+    </GooeyTextReveal>
+  )
+}`,
+    props: [
+      { prop: "children", type: "React.ReactNode", defaultValue: "-", description: "Text-bearing React elements to split into animated lines." },
+      { prop: "mode", type: "'immediate' | 'scroll' | 'scrub'", defaultValue: "'immediate'", description: "Determines whether the animation runs on mount, on scroll entry, or in sync with scroll progress." },
+      { prop: "delay", type: "number", defaultValue: "0", description: "Delay in seconds for immediate and scroll reveals." },
+      { prop: "duration", type: "number", defaultValue: "1.5", description: "Duration of each line reveal in seconds." },
+      { prop: "stagger", type: "number", defaultValue: "0.1", description: "Delay in seconds between consecutive lines." },
+      { prop: "blurAmount", type: "number", defaultValue: "0.35", description: "Starting blur in em units." },
+      { prop: "ease", type: "string", defaultValue: "'power3.out'", description: "GSAP easing expression used by the tween." },
+      { prop: "start", type: "string", defaultValue: "'top 80%'", description: "ScrollTrigger start position for scroll and scrub modes." },
+      { prop: "end", type: "string", defaultValue: "'bottom 75%'", description: "ScrollTrigger end position for scrub mode." },
+      { prop: "scroller", type: "string | HTMLElement | React.RefObject<HTMLElement | null>", defaultValue: "-", description: "Optional scrollable ancestor. Defaults to the browser viewport." },
+      { prop: "once", type: "boolean", defaultValue: "true", description: "Runs a scroll reveal only once. Set false to reverse when leaving." },
+      { prop: "disabled", type: "boolean", defaultValue: "false", description: "Renders untouched content without splitting or animation." },
+      { prop: "onComplete", type: "() => void", defaultValue: "-", description: "Callback fired when the reveal tween completes." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the wrapper. Standard div attributes are also forwarded." },
+      { prop: "ref", type: "React.Ref<HTMLDivElement>", defaultValue: "-", description: "Forwarded ref for the rendered wrapper element." },
     ],
   },
 
@@ -754,8 +999,8 @@ export function GlassDockDemo() {
   return (
     <GlassDock
       items={[
-        { icon: "home", label: "Home", href: "/" },
-        { icon: "settings", label: "Settings", href: "/settings" },
+        { icon: "home", title: "Home", href: "/" },
+        { icon: "settings", title: "Settings", href: "/settings" },
       ]}
     />
   )
@@ -815,6 +1060,39 @@ export function SpotlightMarqueeDemo() {
       { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes." },
     ],
   },
+  
+  "ripple-displacement-slider": {
+    dependencies: "npm install three @types/three gsap clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "This component requires Three.js for WebGL displacement effects and GSAP for timing.",
+      "The component auto-loops every 5 seconds. Provide your own images via the 'slides' prop.",
+      "The component detects window width and reduces animation duration slightly on mobile for a snappier feel.",
+    ],
+    usageCode: `import { RippleDisplacementSlider } from "@/components/ui/ripple-displacement-slider"
+
+export function RippleDisplacementSliderDemo() {
+  return (
+    <div className="h-[600px] w-full">
+      <RippleDisplacementSlider />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "slides", type: "RippleSlide[]", defaultValue: "DEFAULT_SLIDES", description: "Array of slides containing titles, descriptions, and background images." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes applied to the container." },
+    ],
+    additionalPropSections: [
+      {
+        title: "RippleSlide",
+        data: [
+          { prop: "title", type: "string", defaultValue: "-", description: "Main heading text for the slide." },
+          { prop: "description", type: "string", defaultValue: "-", description: "Secondary descriptive text." },
+          { prop: "image", type: "string", defaultValue: "-", description: "URL to the image used as the background texture." },
+        ]
+      }
+    ]
+  },
 
   "logo-slider": {
     dependencies: "npm install framer-motion clsx tailwind-merge",
@@ -844,20 +1122,26 @@ export function LogoSliderDemo() {
     includeUtils: true,
     usageCode: `import { StackedLogos } from "@/components/ui/stacked-logos"
 
+const logoGroups = [
+  [
+    <img key="acme" src="/logos/acme.svg" alt="Acme" />,
+    <img key="globex" src="/logos/globex.svg" alt="Globex" />,
+  ],
+  [
+    <img key="initech" src="/logos/initech.svg" alt="Initech" />,
+    <img key="umbrella" src="/logos/umbrella.svg" alt="Umbrella" />,
+  ],
+]
+
 export function StackedLogosDemo() {
-  return (
-    <StackedLogos
-      logos={[
-        { src: "/logo1.svg", alt: "Logo 1" },
-        { src: "/logo2.svg", alt: "Logo 2" },
-      ]}
-    />
-  )
+  return <StackedLogos logoGroups={logoGroups} />
 }`,
     props: [
-      { prop: "logos", type: "Logo[]", defaultValue: "-", description: "Array of logo objects." },
+      { prop: "logoGroups", type: "React.ReactNode[][]", defaultValue: "-", description: "Required groups of logo nodes. Each inner array is animated within one grid column." },
       { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes." },
       { prop: "duration", type: "number", defaultValue: "30", description: "Duration of the animation cycle in seconds." },
+      { prop: "stagger", type: "number", defaultValue: "0", description: "Animation timing offset between logo groups." },
+      { prop: "logoWidth", type: "string", defaultValue: "'200px'", description: "Width of each logo group column." },
     ],
   },
 
@@ -1177,6 +1461,418 @@ export function NotchNavbarDemo() {
     ],
   },
 
+  "gooey-search": {
+    dependencies: "npm install framer-motion clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "The gooey blob effect is created by an inline SVG <filter> (feGaussianBlur + feColorMatrix). The component injects it automatically with a unique id per instance, so you can render multiple search bars on one page without conflicts.",
+      "Colors are driven by the --foreground and --background CSS variables (standard shadcn tokens), so the component adapts to light and dark themes out of the box.",
+      "Safari and Chrome-on-iOS don't render the SVG goo filter reliably, so the component auto-detects them and falls back to a clean, non-gooey layout.",
+    ],
+    usageCode: `import { GooeySearch } from "@/components/ui/gooey-search"
+
+const FRAMEWORKS = ["React", "Vue", "Svelte", "Next.js", "Solid", "Astro"]
+
+export function GooeySearchDemo() {
+  return (
+    <GooeySearch
+      items={FRAMEWORKS}
+      placeholder="Search frameworks..."
+      buttonLabel="Search"
+      maxResults={4}
+      onSelect={(item) => console.log("Selected:", item)}
+    />
+  )
+}`,
+    props: [
+      { prop: "items", type: "string[]", defaultValue: "[]", description: "Strings to search through locally (case-insensitive substring match). Ignored when onSearch is provided." },
+      { prop: "onSearch", type: "(query: string) => Promise<string[]> | string[]", defaultValue: "-", description: "Custom search function for external/async data sources. Overrides the local items filter when supplied." },
+      { prop: "onSelect", type: "(item: string) => void", defaultValue: "-", description: "Called when a result item is clicked or activated with Enter." },
+      { prop: "placeholder", type: "string", defaultValue: "'Type to search...'", description: "Placeholder text shown inside the expanded search input." },
+      { prop: "buttonLabel", type: "string", defaultValue: "'Search'", description: "Label shown on the collapsed pill button before it expands." },
+      { prop: "debounceMs", type: "number", defaultValue: "500", description: "Delay in milliseconds before the search runs after the last keystroke." },
+      { prop: "maxResults", type: "number", defaultValue: "5", description: "Maximum number of result pills to render." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the outermost wrapper." },
+    ],
+  },
+
+  "animated-tooltip": {
+    dependencies: "npm install framer-motion clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Each tooltip picks a shape + animation via the `variant` prop: cora, smaug, dori, gram, indis, malva, or sadoc.",
+      "Colors use the --foreground and --background CSS variables (standard shadcn tokens), so the bubble and text adapt to light and dark themes automatically.",
+      "The tooltip opens on hover and keyboard focus, and is positioned above the trigger. Give it room above in tight layouts.",
+    ],
+    usageCode: `import { AnimatedTooltip } from "@/components/ui/animated-tooltip"
+
+export function AnimatedTooltipDemo() {
+  return (
+    <p className="text-lg">
+      Not all those who{" "}
+      <AnimatedTooltip variant="cora" content="Be yourself; everyone else is already taken.">
+        wander
+      </AnimatedTooltip>{" "}
+      are lost.
+    </p>
+  )
+}`,
+    props: [
+      { prop: "children", type: "React.ReactNode", defaultValue: "-", description: "The trigger label shown inline (usually a word or short phrase)." },
+      { prop: "content", type: "React.ReactNode", defaultValue: "-", description: "The tooltip body revealed on hover or focus." },
+      { prop: "variant", type: '"cora" | "smaug" | "dori" | "gram" | "indis" | "malva" | "sadoc"', defaultValue: "'cora'", description: "Which shape and animation style to use." },
+      { prop: "accentColor", type: "string", defaultValue: "'#6fbb95'", description: "Trigger text color while the tooltip is open." },
+      { prop: "shapeColor", type: "string", defaultValue: "'var(--foreground)'", description: "Fill color of the tooltip bubble." },
+      { prop: "textColor", type: "string", defaultValue: "'var(--background)'", description: "Color of the tooltip text." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the inline wrapper." },
+    ],
+  },
+
+  "wave-grid-background": {
+    dependencies: "npm install three clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Built on raw Three.js (no React Three Fiber needed). It fills its parent and covers the container with square cubes, cropping the outer grid where needed. Give its wrapper an explicit height.",
+      "The ripples follow the cursor over the canvas; when the pointer is idle it emits gentle random ripples (toggle with `autoAnimate`).",
+      "Content overlays let pointer movement reach the grid. Add `pointer-events-auto` to any child control that should receive clicks.",
+      "The wave motion and peak coloring run in a custom GLSL vertex/fragment shader injected via onBeforeCompile, with a vignette + RGB-shift post-processing pass.",
+      "Everything is disposed on unmount (renderer, geometries, materials, textures, listeners), so it is safe to mount and unmount.",
+    ],
+    usageCode: `import { WaveGridBackground } from "@/components/ui/wave-grid-background"
+
+export function WaveGridBackgroundDemo() {
+  return (
+    <div className="relative h-[520px] w-full overflow-hidden rounded-xl">
+      <WaveGridBackground colorBase="#ffffff" colorHigh="#0055ff">
+        <div className="flex h-full w-full items-center justify-center">
+          <h2 className="text-6xl font-bold text-neutral-950">
+            Wave Grid
+          </h2>
+        </div>
+      </WaveGridBackground>
+    </div>
+  )
+}`,
+    props: [
+      { prop: "children", type: "React.ReactNode", defaultValue: "-", description: "Content rendered on top of the animated background." },
+      { prop: "gridSize", type: "number", defaultValue: "40", description: "Grid resolution (N×N cubes)." },
+      { prop: "colorBase", type: "string", defaultValue: "'#ffffff'", description: "Base cube color and scene tint." },
+      { prop: "colorHigh", type: "string", defaultValue: "'#0055ff'", description: "Color of the wave peaks." },
+      { prop: "waveAmplitude", type: "number", defaultValue: "0.4", description: "Peak displacement multiplier." },
+      { prop: "waveSpeed", type: "number", defaultValue: "6.0", description: "Wavefront expansion speed (world units/sec)." },
+      { prop: "waveFrequency", type: "number", defaultValue: "1.2", description: "Spatial oscillation frequency." },
+      { prop: "waveWidth", type: "number", defaultValue: "3.0", description: "Gaussian half-width of the wave ring." },
+      { prop: "waveMaxHeight", type: "number", defaultValue: "0.4", description: "Hard clamp on displacement height." },
+      { prop: "waveJitter", type: "number", defaultValue: "0.2", description: "Per-cube positional jitter." },
+      { prop: "autoAnimate", type: "boolean", defaultValue: "true", description: "Emit gentle random ripples while the cursor is idle." },
+      { prop: "vignette", type: "boolean", defaultValue: "true", description: "Apply the vignette + RGB-shift post-processing pass." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the wrapper element." },
+    ],
+  },
+
+  "interactive-particles": {
+    dependencies: "npm install three gsap clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Provide a starting image via `src`, and/or let visitors supply their own with the built-in upload control (`allowUpload`, on by default). The uploaded image immediately regenerates the particle pattern.",
+      "Bright pixels become particles and dark ones are discarded (tune the cutoff with `threshold`); high-contrast images (light shapes on black) look best.",
+      "Uploaded images are downscaled to `maxDimension` (default 320px) before sampling, so any size stays performant — one kept pixel becomes one particle.",
+      "External `src` images must be same-origin or CORS-enabled (the component reads pixels via a canvas). Uploaded files are read locally as object URLs, so no CORS applies.",
+      "Built on raw Three.js + GSAP (no React Three Fiber). It fills its parent, so give the wrapper an explicit height. Everything — including the WebGL context — is disposed on unmount.",
+    ],
+    usageCode: `import { InteractiveParticles } from "@/components/ui/interactive-particles"
+
+export function InteractiveParticlesDemo() {
+  return (
+    <div className="relative h-[520px] w-full overflow-hidden rounded-xl bg-black">
+      {/* allowUpload adds an "Upload image" button; drop in any image
+          and the particle pattern regenerates from it. */}
+      <InteractiveParticles src="/particles.png" background="#000000" allowUpload />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "src", type: "string", defaultValue: "-", description: "Initial image URL to sample particles from. Optional when uploads are allowed." },
+      { prop: "allowUpload", type: "boolean", defaultValue: "true", description: "Show an 'Upload image' control so users can supply their own image." },
+      { prop: "uploadLabel", type: "string", defaultValue: "'Upload image'", description: "Label for the upload control." },
+      { prop: "onUpload", type: "(file: File) => void", defaultValue: "-", description: "Fired with the uploaded File whenever the user picks an image." },
+      { prop: "maxDimension", type: "number", defaultValue: "320", description: "Longest edge the source is downscaled to before sampling (caps particle count)." },
+      { prop: "background", type: "string", defaultValue: "'#000000'", description: "Wrapper background color." },
+      { prop: "color", type: "string", defaultValue: "'#ffffff'", description: "Particle tint. Keeps the image's greyscale tones by default." },
+      { prop: "size", type: "number", defaultValue: "1.2", description: "Steady-state particle size multiplier." },
+      { prop: "randomness", type: "number", defaultValue: "1.8", description: "Steady-state random spread of the particles." },
+      { prop: "depth", type: "number", defaultValue: "3", description: "Steady-state depth (z displacement)." },
+      { prop: "touchRadius", type: "number", defaultValue: "0.15", description: "Cursor touch radius (0–1)." },
+      { prop: "threshold", type: "number", defaultValue: "34", description: "Brightness cutoff (0–255) below which pixels are discarded." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the wrapper element." },
+    ],
+  },
+
+  "animated-footer": {
+    dependencies: "npm install gsap next-themes clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Built on raw canvas + GSAP (no React Three Fiber or the SplitText plugin). It fills its parent, so wrap it in a positioned container with an explicit height.",
+      "Each image is re-drawn as live ASCII art: bright pixels become glyphs, dark ones are dropped. High-contrast images (a light subject on black) look best. Tune the look with `asciiChars`, `charColor`, `columns` and `cellSize`.",
+      "Cursor movement lights up little clusters of cells and softly parallaxes the artwork; set `parallaxStrength={0}` to disable the drift.",
+      "By default the reveal (headings unmasking, links/copy sliding up, hands gliding in) fires via an IntersectionObserver when the footer scrolls into view — set `revealOnScroll={false}` to show it immediately.",
+      "For the classic \"revealed from behind\" entrance, pin the footer behind your page content and drive the `revealed` prop yourself (e.g. flip it when a spacer crosses mid-viewport). See the demo source for the pinned-footer + revealer pattern.",
+      "Images are read pixel-by-pixel through a canvas, so `leftImage`/`rightImage` must be same-origin or served with CORS enabled. The demo images live in `public/animated-footer/` — swap in your own.",
+      "Everything is cleaned up on unmount (animation frame, listeners, tweens, observer), so it is safe to mount and unmount.",
+    ],
+    usageCode: `import { AnimatedFooter } from "@/components/ui/animated-footer"
+
+export function AnimatedFooterDemo() {
+  return (
+    <div className="relative h-[600px] w-full overflow-hidden rounded-xl">
+      <AnimatedFooter
+        headingLines={["VengeanceUI"]}
+        leftImage="/animated-footer/hand-left.jpg"
+        rightImage="/animated-footer/hand-right.jpg"
+      />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "headingLines", type: "string[]", defaultValue: '["VengeanceUI"]', description: "The large display words along the bottom edge." },
+      { prop: "leftImage", type: "string", defaultValue: "'/animated-footer/hand-left.jpg'", description: "Left image URL, sampled into ASCII art. Same-origin or CORS-enabled." },
+      { prop: "rightImage", type: "string", defaultValue: "'/animated-footer/hand-right.jpg'", description: "Right image URL, sampled into ASCII art. Same-origin or CORS-enabled." },
+      { prop: "background", type: "string", defaultValue: "undefined", description: "Footer background color. Defaults to tailwind classes." },
+      { prop: "textColor", type: "string", defaultValue: "undefined", description: "Text color for headings. Defaults to tailwind classes." },
+      { prop: "asciiChars", type: "string", defaultValue: "'........:::=+xX#0369'", description: "Character ramp, ordered dark → light, used to render the ASCII art." },
+      { prop: "charColor", type: "string", defaultValue: "Adaptive", description: "Color of the ASCII glyphs. Adapts to dark/light mode by default." },
+      { prop: "hoverColor", type: "string", defaultValue: "'#ff6a00'", description: "Fill color of a highlighted (hovered) cell." },
+      { prop: "hoverCharColor", type: "string", defaultValue: "Adaptive", description: "Glyph color inside a highlighted cell. Adapts to dark/light mode by default." },
+      { prop: "columns", type: "number", defaultValue: "80", description: "Number of columns each image is sampled to." },
+      { prop: "cellSize", type: "number", defaultValue: "20", description: "Pixel size of each ASCII cell." },
+      { prop: "fontSize", type: "number", defaultValue: "18", description: "Font size (px) of the ASCII glyphs." },
+      { prop: "parallaxStrength", type: "number", defaultValue: "20", description: "Pointer parallax strength in px; set to 0 to disable." },
+      { prop: "hoverRadius", type: "number", defaultValue: "8", description: "Cursor influence radius, in cells, for the hover highlight." },
+      { prop: "revealOnScroll", type: "boolean", defaultValue: "true", description: "Play the reveal when the footer scrolls into view (else show immediately)." },
+      { prop: "revealed", type: "boolean", defaultValue: "-", description: "Controlled reveal. When set, ignores the built-in observer and plays in (true) / out (false) to match — drive it from your own scroll trigger to reveal the footer from behind other content." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
+  "music-player": {
+    dependencies: "npm install lucide-react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Fully self-contained — no audio library or Web Audio setup. Playback is driven by a native `<audio>` element, and the equalizer is pure CSS, so `lucide-react` is the only runtime dependency.",
+      "Pass a `tracks` array of `{ title, artist, src, artwork? }`. Audio `src` URLs must be same-origin or served with CORS enabled so the browser can stream them.",
+      "The floating avatar uses the player-level `avatar` prop, falling back to each track's `artwork`. Square images (e.g. 200×200) look best.",
+      "Skipping (prev/next) and reaching the end of a track always continue playback; set `loop={false}` to stop at the end of the playlist instead of wrapping to the first track.",
+      "The bar collapses to a compact pill via the toggle in the corner — start collapsed with `defaultCollapsed`. Width animates, so give it room in your layout or constrain it with `className`.",
+    ],
+    usageCode: `import { MusicPlayer, type MusicTrack } from "@/components/ui/music-player"
+
+const tracks: MusicTrack[] = [
+  { title: "Play It", artist: "Witchitaw", src: "/songs/play-it.mp3", artwork: "/artwork/witchitaw.jpg" },
+  { title: "Real Time", artist: "Tilden", src: "/songs/real-time.mp3", artwork: "/artwork/tilden.jpg" },
+]
+
+export function MusicPlayerDemo() {
+  return <MusicPlayer tracks={tracks} accentColor="#ff6a00" />
+}`,
+    props: [
+      { prop: "tracks", type: "MusicTrack[]", defaultValue: "-", description: "Playlist to play through: { title, artist, src, artwork? }. Renders nothing when empty." },
+      { prop: "avatar", type: "string", defaultValue: "-", description: "Floating avatar image. Falls back to the current track's artwork." },
+      { prop: "startIndex", type: "number", defaultValue: "0", description: "Index of the track to start on." },
+      { prop: "autoPlay", type: "boolean", defaultValue: "false", description: "Begin playing as soon as the player mounts (browsers may block until interaction)." },
+      { prop: "loop", type: "boolean", defaultValue: "true", description: "Wrap from the last track back to the first when a track ends." },
+      { prop: "defaultCollapsed", type: "boolean", defaultValue: "false", description: "Render collapsed (compact pill) on first paint." },
+      { prop: "showProgress", type: "boolean", defaultValue: "true", description: "Show the seekable progress bar along the bottom edge." },
+      { prop: "accentColor", type: "string", defaultValue: "'currentColor'", description: "Accent color for the equalizer bars and progress fill." },
+      { prop: "onTrackChange", type: "(track: MusicTrack, index: number) => void", defaultValue: "-", description: "Called whenever the active track changes." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
+  "awwwards-nav": {
+    dependencies: "npm install gsap @phosphor-icons/react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "The bar animates its height with GSAP (`power4.inOut`); the expand/collapse motion, fade of the inline links, and icon flip are all driven imperatively, so no extra animation config is needed.",
+      "Positioning is left to you via `className`. It defaults to `fixed bottom-6 left-1/2 -translate-x-1/2` for real page use — override with `absolute` inside a `position: relative` parent to contain it (as the preview does).",
+      "Pass your own `items` (the inline links) and `columns` (the mega-menu). Each column is `{ title, links: { label, href }[] }`; the dashed dividers between columns are drawn automatically.",
+      "It looks best over imagery or a dark backdrop — the surface is translucent black with a blur, so a busy light background will show through.",
+      "Use `onOpenChange` to react to the panel opening and closing (e.g. dim the page behind it).",
+    ],
+    usageCode: `import { AwwwardsNav } from "@/components/ui/awwwards-nav"
+
+export function AwwwardsNavDemo() {
+  return (
+    <AwwwardsNav
+      items={[
+        { label: "Home", href: "#" },
+        { label: "Nominees", href: "#" },
+        { label: "Directory", href: "#" },
+        { label: "Collections", href: "#" },
+      ]}
+    />
+  )
+}`,
+    props: [
+      { prop: "items", type: "AwwwardsNavLink[]", defaultValue: "Sample set", description: "Inline links shown in the collapsed bar: { label, href }." },
+      { prop: "columns", type: "AwwwardsNavColumn[]", defaultValue: "Sample set", description: "Columns revealed in the expanded mega-menu: { title, links }." },
+      { prop: "moreLabel", type: "string", defaultValue: "'More'", description: "Label on the expand/collapse button." },
+      { prop: "onOpenChange", type: "(open: boolean) => void", defaultValue: "-", description: "Called whenever the panel opens (true) or closes (false)." },
+      { prop: "className", type: "string", defaultValue: "'fixed bottom-6 left-1/2 -translate-x-1/2'", description: "Extra classes for the root nav — use this to position it." },
+    ],
+  },
+
+  "verse-cards": {
+    dependencies: "npm install gsap lucide-react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Opening the deck fans the cards up from below with a staggered `power4.inOut` sweep, pops in the close button, and fades up the footer. Once open, it behaves like a stack you flip through: clicking the front card flings it away and the next card slides forward. The close button (or re-triggering) sends the stack back down and resets it.",
+      "It fills its parent (`h-full w-full`) rather than the viewport, so wrap it in a sized, positioned container. The deck is an absolutely-positioned overlay inside that box.",
+      "Icons are passed as nodes via `navItems`, so bring your own icon set. Mark exactly one item with `isTrigger` to open the deck; other items fire their own `onClick`.",
+      "Cards can be plain strings (used as labels) or `{ label, className }` objects — pass `className` to give a card its own background or accent. Only the front card is clickable; use `onDeal` to react as each one is flicked away.",
+      "Everything adapts to light and dark mode and is fully state-driven, so it is safe to mount and unmount.",
+    ],
+    usageCode: `import { Layers } from "lucide-react"
+import { VerseCards } from "@/components/ui/verse-cards"
+
+export function VerseCardsDemo() {
+  return (
+    <div className="relative h-[600px] w-full overflow-hidden rounded-xl">
+      <VerseCards
+        navItems={[
+          { label: "Work", icon: <Layers className="h-5 w-5" />, badge: true, isTrigger: true },
+        ]}
+        cards={["Sonyverse", "Nota", "Blinder", "Cinovas", "Uito"]}
+      />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "navItems", type: "VerseNavItem[]", defaultValue: "Single 'Work' trigger", description: "Nav tiles. Mark one with isTrigger to open the deck; each item is { label, icon, badge?, isTrigger?, onClick? }." },
+      { prop: "cards", type: "(VerseCard | string)[]", defaultValue: "Sample set", description: "Cards in the deck. Strings are used as labels; objects are { label, className }." },
+      { prop: "footerText", type: "string", defaultValue: "'Click the front card to deal it away.'", description: "Caption shown under the open deck." },
+      { prop: "onOpenChange", type: "(open: boolean) => void", defaultValue: "-", description: "Called whenever the deck opens (true) or closes (false)." },
+      { prop: "onDeal", type: "(index: number) => void", defaultValue: "-", description: "Called when the front card is flicked away, with its index in the deck." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
+  "search-modal": {
+    dependencies: "npm install @phosphor-icons/react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Every section — tags, results, quick actions, files — is data-driven and optional. Omit a prop (or pass an empty array) and that section simply doesn't render.",
+      "Typing in the search bar live-filters the result rows by name and meta text, and the \"Last search\" count reflects the visible rows. Tags are removable with their close button.",
+      "Icons are Phosphor components passed as nodes (tag icons, per-row actions, quick-action and file icons), so you can swap in any icon set. The `⌘F` hint is a plain styled `<kbd>` — no image asset needed.",
+      "By default it renders as an inline panel. Set `modal` to turn it into a centered overlay you toggle with ⌘K / Ctrl+K (configurable via `hotkey`); Escape, the backdrop, and the count all work, and the input auto-focuses on open. Drive it controlled with `open` + `onOpenChange`, or leave it uncontrolled with `defaultOpen`.",
+      "In modal mode the overlay is `fixed inset-0`. To scope it inside a positioned container (like the preview), pass `overlayClassName` to override the positioning — e.g. `absolute items-center p-6`.",
+      "The surface adapts to light and dark mode; result avatars fall back to a neutral circle when no `avatar` URL is given.",
+    ],
+    usageCode: `import { useState } from "react"
+import { SearchModal } from "@/components/ui/search-modal"
+
+export function SearchModalDemo() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    // Press ⌘K / Ctrl+K to open, Escape to close
+    <SearchModal
+      modal
+      open={open}
+      onOpenChange={setOpen}
+      results={[
+        { name: "Jason Woordheart", meta: "jason@dribbble.com", avatar: "/avatars/jason.jpg" },
+        { name: "Rob Miller", meta: "rob@icloud.com" },
+      ]}
+    />
+  )
+}`,
+    props: [
+      { prop: "modal", type: "boolean", defaultValue: "false", description: "Render as a centered overlay with a backdrop instead of an inline panel." },
+      { prop: "open", type: "boolean", defaultValue: "-", description: "Controlled open state (modal mode)." },
+      { prop: "defaultOpen", type: "boolean", defaultValue: "false", description: "Uncontrolled initial open state (modal mode)." },
+      { prop: "onOpenChange", type: "(open: boolean) => void", defaultValue: "-", description: "Called when the modal opens (true) or closes (false)." },
+      { prop: "hotkey", type: "string | null", defaultValue: "'k'", description: "Key (with ⌘/Ctrl) that toggles the modal. Set null to disable." },
+      { prop: "closeOnEscape", type: "boolean", defaultValue: "true", description: "Close the modal when Escape is pressed." },
+      { prop: "overlayClassName", type: "string", defaultValue: "-", description: "Classes for the overlay wrapper — override 'fixed' with 'absolute' to scope it." },
+      { prop: "placeholder", type: "string", defaultValue: "'Search for action, people, instruments'", description: "Placeholder for the search input." },
+      { prop: "tags", type: "SearchTag[]", defaultValue: "Sample set", description: "Removable filter tags: { label, icon? }." },
+      { prop: "results", type: "SearchResult[]", defaultValue: "Sample set", description: "Result rows (live-filtered): { name, meta?, avatar?, href?, actions? }." },
+      { prop: "quickActions", type: "QuickAction[]", defaultValue: "Sample set", description: "Quick-action rows: { label, icon?, shortcut?, onClick? }." },
+      { prop: "files", type: "SearchFile[]", defaultValue: "Sample set", description: "File rows: { name, ext?, icon?, verified?, onShare? }." },
+      { prop: "defaultQuery", type: "string", defaultValue: "''", description: "Initial query value." },
+      { prop: "onQueryChange", type: "(query: string) => void", defaultValue: "-", description: "Called as the query changes." },
+      { prop: "onSelectResult", type: "(result: SearchResult, index: number) => void", defaultValue: "-", description: "Called when a result row is clicked." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
+  "circular-gallery": {
+    dependencies: "npm install gsap clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "Cards are laid out around a tilted 3D ring with GSAP. The ring auto-rotates gently on its own; drag it to spin, move the cursor to parallax the tilt, and hover a card to lift it and mirror it in the centre preview.",
+      "The original's full-page ScrollTrigger is replaced with drag + auto-rotation. The ring scales to fit its container; it fills its parent (`h-full w-full`), so give it an explicit height.",
+      "Pass an `images` array; it's cycled around the ring, so a handful of images fills a large `count`. With no images, neutral placeholder cards are shown. Serve images same-origin (or CORS-enabled) and keep them small — one file is reused many times.",
+      "Tune the look with `count`, `radius`, `tilt`, and `itemWidth`/`itemHeight`. Higher `count` means more DOM nodes, so keep it reasonable on low-end devices.",
+      "Set `autoRotate={false}` for a static ring, `parallax={false}` to lock the tilt, or `showPreview={false}` to hide the centre image. Adapts to light and dark mode.",
+    ],
+    usageCode: `import { CircularGallery } from "@/components/ui/circular-gallery"
+
+const images = Array.from({ length: 15 }, (_, i) => \`/gallery/img\${i + 1}.jpg\`)
+
+export function CircularGalleryDemo() {
+  return (
+    <div className="relative h-[600px] w-full overflow-hidden rounded-xl">
+      <CircularGallery images={images} />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "images", type: "string[]", defaultValue: "-", description: "Image URLs, cycled around the ring. Omit for neutral placeholder cards." },
+      { prop: "count", type: "number", defaultValue: "150", description: "Number of cards in the ring." },
+      { prop: "tilt", type: "number", defaultValue: "55", description: "Base tilt of the ring in degrees (rotateX)." },
+      { prop: "radius", type: "number", defaultValue: "400", description: "Ring radius in px (card distance from centre)." },
+      { prop: "itemWidth", type: "number", defaultValue: "45", description: "Card width in px." },
+      { prop: "itemHeight", type: "number", defaultValue: "60", description: "Card height in px." },
+      { prop: "autoRotate", type: "boolean", defaultValue: "true", description: "Slowly spin the ring on its own." },
+      { prop: "autoRotateSpeed", type: "number", defaultValue: "3", description: "Auto-rotation speed in degrees per second." },
+      { prop: "showPreview", type: "boolean", defaultValue: "true", description: "Show the large centre preview that follows the hovered card." },
+      { prop: "parallax", type: "boolean", defaultValue: "true", description: "Parallax the ring's tilt toward the cursor." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
+  "highlight-grid": {
+    dependencies: "npm install clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "No animation library — the highlight is a single absolutely-positioned element that transitions its transform, size and background-color as the cursor moves between cells.",
+      "Pass `rows` as an array of rows, and each row an array of `{ label, color? }`. Rows can hold different numbers of cells; the grid stretches them evenly.",
+      "Each cell gets an accent colour from its own `color`, or from the cycled `colors` palette. The label of the highlighted cell turns white so it stays legible over the colour.",
+      "The grid uses a wide rectangular frame and scrolls horizontally when its labels need more room. The highlight re-aligns on resize, and `highlightFirst` parks it on the first cell on mount.",
+      "The surface is transparent so it sits on whatever background you place it over, with borders and labels that adapt to light and dark mode (the hovered cell's label turns white to stay legible over its colour). Set a background via `className` if you want a solid field. Hover-driven, so on touch devices the highlight simply stays put.",
+    ],
+    usageCode: `import { HighlightGrid } from "@/components/ui/highlight-grid"
+
+export function HighlightGridDemo() {
+  return (
+    <HighlightGrid
+      rows={[
+        [{ label: "html" }, { label: "css" }, { label: "javascript" }],
+        [{ label: "react" }, { label: "next.js" }, { label: "three.js" }],
+      ]}
+    />
+  )
+}`,
+    props: [
+      { prop: "rows", type: "HighlightItem[][]", defaultValue: "Sample set", description: "Rows of cells; each row can hold a different number of { label, color? } cells. Labels render wrapped in parentheses." },
+      { prop: "colors", type: "string[]", defaultValue: "8-colour palette", description: "Palette cycled for cells without an explicit color." },
+      { prop: "transitionDuration", type: "number", defaultValue: "250", description: "Highlight transition duration in ms." },
+      { prop: "highlightFirst", type: "boolean", defaultValue: "true", description: "Park the highlight on the first cell on mount." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root element." },
+    ],
+  },
+
   "faq-accordion": {
     dependencies: "npm install clsx tailwind-merge",
     includeUtils: true,
@@ -1201,15 +1897,22 @@ export function FaqAccordionDemo() {
 
 export function InteractiveKeyboardDemo() {
   return (
-    <InteractiveKeyboard 
+    <InteractiveKeyboard
       onKeyClick={(key) => console.log(key)}
+      onKeyPress={(key) => console.log(key)}
     />
   )
 }`,
     props: [
       { prop: "onKeyClick", type: "(key: string) => void", defaultValue: "-", description: "Callback fired when any key is clicked. Returns the key's label." },
+      { prop: "onKeyPress", type: "(key: string) => void", defaultValue: "-", description: "Callback fired when a physical key is pressed while the cursor is over the keyboard. Returns the key's label." },
       { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the keyboard wrapper." },
     ],
+    credits: {
+      author: "xevrion",
+      github: "https://github.com/xevrion",
+      description: "Added physical keyboard interactivity and redesigned the keycaps for the Interactive Keyboard component.",
+    },
   },
 
   "generate-button": {
@@ -1417,5 +2120,260 @@ export function Demo() {
       { prop: "secondaryAccent", type: "string", defaultValue: "\"#a855f7\"", description: "Secondary accent for the enter key." },
       { prop: "scale", type: "number", defaultValue: "0.8", description: "Scale factor." },
     ],
+  },
+  
+  "scroll-dissolve-reveal": {
+    dependencies: "npm install @react-three/fiber @react-three/drei three framer-motion clsx tailwind-merge",
+    includeUtils: true,
+    usageCode: `import { ScrollDissolveReveal } from "@/components/ui/scroll-dissolve-reveal"
+
+export function ScrollDissolveRevealDemo() {
+  return (
+    <ScrollDissolveReveal
+      imageFront="/front.jpg"
+      imageBack="/back.jpg"
+    />
+  )
+}`,
+    props: [
+      { prop: "imageFront", type: "string", defaultValue: "-", description: "The image to display initially and dissolve away." },
+      { prop: "imageBack", type: "string", defaultValue: "-", description: "The image to reveal underneath the dissolve effect." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the sticky container." },
+      { prop: "containerClassName", type: "string", defaultValue: "-", description: "Additional CSS classes for the outer scroll container." },
+    ],
+  },
+
+  "solar-system": {
+    dependencies: "npm install framer-motion lucide-react clsx tailwind-merge",
+    includeUtils: true,
+    usageCode: `import { SolarSystem } from "@/components/ui/solar-system"
+
+export function SolarSystemDemo() {
+  return (
+    <SolarSystem
+      title="Interactive Orbit Component"
+      description="Showcase your integrations or technology ecosystem with our highly interactive 3D solar system component."
+    />
+  )
+}`,
+    props: [
+      { prop: "centerLogo", type: "string | React.ReactNode", defaultValue: "OrbitIcon", description: "Logo element rendered in the center core. If not provided, renders a spinning Orbit icon." },
+      { prop: "centerLogoAlt", type: "string", defaultValue: "\"Core Engine\"", description: "Alternate text description for screen readers." },
+      { prop: "title", type: "string", defaultValue: "\"Compatible with your stack\"", description: "Headline text displayed in the header information section." },
+      { prop: "description", type: "string", defaultValue: "\"Connect from any framework...\"", description: "Sub-headline text displayed in the header information section." },
+      { prop: "orbits", type: "OrbitConfig[]", defaultValue: "DEFAULT_ORBITS", description: "Array of orbit configurations mapping items, radius classes, and speeds." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes to override the outer container." },
+    ],
+    additionalPropSections: [
+      {
+        title: "OrbitConfig Interface",
+        data: [
+          { prop: "id", type: "string", defaultValue: "-", description: "Unique identifier for the orbit ring (e.g. 'inner', 'mid')." },
+          { prop: "name", type: "string", defaultValue: "-", description: "Display name for the ring in filter options." },
+          { prop: "radiusClass", type: "string", defaultValue: "-", description: "CSS variable representing orbit size (e.g. 'var(--radius-inner)')." },
+          { prop: "radiusPx", type: "number", defaultValue: "-", description: "Absolute radius in pixels for positioning calculations." },
+          { prop: "speed", type: "number", defaultValue: "-", description: "Standard rotation duration in seconds for one full loop." },
+          { prop: "items", type: "SolarSystemItem[]", defaultValue: "-", description: "Collection of technology node items orbiting on this ring." },
+        ]
+      },
+      {
+        title: "SolarSystemItem Interface",
+        data: [
+          { prop: "id", type: "string", defaultValue: "-", description: "Unique identifier for the technology node." },
+          { prop: "label", type: "string", defaultValue: "-", description: "Display label for the node." },
+          { prop: "type", type: "string", defaultValue: "-", description: "Classification category label (e.g. 'Frontend Library')." },
+          { prop: "badge", type: "string", defaultValue: "-", description: "Highlight badge text (e.g. 'Official SDK')." },
+          { prop: "desc", type: "string", defaultValue: "-", description: "Detailed summary description of the technology." },
+          { prop: "color", type: "string", defaultValue: "-", description: "Hex value of theme highlight color (e.g. '#61DAFB' for React)." },
+          { prop: "svg", type: "React.ReactNode", defaultValue: "-", description: "Inline SVG element/icon to render inside the node." },
+          { prop: "code", type: "string", defaultValue: "-", description: "Sample code snippet to display in the editor sidebar." },
+        ]
+      }
+    ],
+    credits: {
+      author: "Siddh2024",
+      github: "https://github.com/Siddh2024",
+      linkedin: "https://www.linkedin.com/in/siddh-sharma-b0164430b/",
+      description: "Designed and contributed the interactive 3D Solar System component to the Vengeance UI catalog."
+    }
+  },
+
+  "mega-menu-navbar": {
+    dependencies: "npm install lucide-react clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "The desktop navigation supports hover, click, and keyboard focus. Escape and outside clicks close any open mega-menu.",
+      "At the lg breakpoint the component switches to a slide-out mobile drawer with animated accordion sections and body-scroll locking.",
+      "Replace the sample feature, use-case, and resource data through props. Each menu item accepts a Lucide icon component, optional badge, and optional icon color class.",
+      "The component is self-contained and only requires lucide-react plus the shared cn utility.",
+    ],
+    usageCode: `import { MegaMenuNavbar } from "@/components/ui/mega-menu-navbar"
+
+export function MegaMenuNavbarDemo() {
+  return (
+    <MegaMenuNavbar
+      brandName="VengeanceUI"
+      brandHref="/"
+      pricingHref="/templates"
+      loginHref="/docs"
+      ctaHref="/components"
+      ctaLabel="Browse components"
+    />
+  )
+}`,
+    props: [
+      { prop: "brandName", type: "string", defaultValue: "'VengeanceUI'", description: "Brand text displayed beside the logo." },
+      { prop: "brandHref", type: "string", defaultValue: "'/'", description: "Destination used by the brand link." },
+      { prop: "logo", type: "React.ReactNode", defaultValue: "VengeanceUI logo", description: "Optional custom logo rendered before the brand name." },
+      { prop: "features", type: "MegaMenuItem[]", defaultValue: "Sample feature set", description: "Items shown in the two-column Features mega-menu." },
+      { prop: "useCases", type: "MegaMenuItem[]", defaultValue: "Sample use cases", description: "Items shown in the Use Cases dropdown." },
+      { prop: "resourceGroups", type: "MegaMenuResourceGroup[]", defaultValue: "Sample groups", description: "Grouped links shown in the Resources mega-menu and mobile accordion." },
+      { prop: "pricingHref", type: "string", defaultValue: "'/templates'", description: "Destination of the Templates link." },
+      { prop: "loginHref", type: "string", defaultValue: "'/docs'", description: "Destination of the documentation action." },
+      { prop: "ctaHref", type: "string", defaultValue: "'/components'", description: "Destination of the primary call to action." },
+      { prop: "ctaLabel", type: "string", defaultValue: "'Browse components'", description: "Text shown in the primary call to action." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional classes for the root header." },
+    ],
+    additionalPropSections: [
+      {
+        title: "MegaMenuItem Interface",
+        data: [
+          { prop: "title", type: "string", defaultValue: "-", description: "Visible item label." },
+          { prop: "description", type: "string", defaultValue: "-", description: "Optional supporting copy." },
+          { prop: "href", type: "string", defaultValue: "-", description: "Navigation destination." },
+          { prop: "icon", type: "LucideIcon", defaultValue: "-", description: "Optional Lucide icon component." },
+          { prop: "iconClassName", type: "string", defaultValue: "-", description: "Optional icon color or styling classes." },
+          { prop: "badge", type: "string", defaultValue: "-", description: "Optional compact status badge." },
+        ],
+      },
+      {
+        title: "MegaMenuResourceGroup Interface",
+        data: [
+          { prop: "title", type: "string", defaultValue: "-", description: "Heading displayed above the group." },
+          { prop: "links", type: "MegaMenuItem[]", defaultValue: "-", description: "Links contained in the group." },
+        ],
+      },
+    ],
+    credits: {
+      author: "ALI-OUALA",
+      github: "https://github.com/ALI-OUALA",
+    },
+  },
+  "books-showcase": {
+    dependencies: "npm install three",
+    includeUtils: true,
+    manualNotes: [
+      "The component relies on Three.js for 3D rendering. Ensure you have three installed.",
+      "The root fills its parent and keeps a 560px minimum height. Give the parent an explicit height, or pass className (for example, h-[680px] or min-h-0) to control the stage.",
+      "Rendering pauses while the showcase is offscreen or the browser tab is hidden.",
+      "Light and dark backgrounds follow the site's .dark class and can be customized independently through themeColors.",
+      "The 'books' prop accepts an array of BookCfg objects. Each book requires id, title, author, year, stars, and desc. Supply cover art through images.front, images.back, and images.spine.",
+      "For best performance, cover images should be optimized webp/jpg files.",
+    ],
+    usageCode: `import { BooksShowcase } from "@/components/ui/books-showcase"
+
+const DEMO_BOOKS = [
+  {
+    id: "book1",
+    title: "The Psychology of Money",
+    author: "Morgan Housel",
+    year: "2020",
+    stars: 5,
+    desc: "Timeless lessons on wealth, greed, and happiness.",
+    spineBg: "#1e1e1e",
+    spineInk: "#ffffff",
+    spineFont: "700 42px Georgia",
+    backBg: "#1e1e1e",
+    backInk: "255,255,255",
+    edge: "#e0d6c8"
+  }
+];
+
+export function BooksShowcaseDemo() {
+  return (
+    <div className="h-[680px] w-full">
+      <BooksShowcase
+        books={DEMO_BOOKS}
+        heroTitle="Books"
+        navTitle="Bestsellers"
+        className="min-h-0"
+      />
+    </div>
+  )
+}`,
+    props: [
+      { prop: "books", type: "BookCfg[]", defaultValue: "-", description: "Array of book configurations to display in the showcase." },
+      { prop: "heroTitle", type: "string", defaultValue: "'Books'", description: "The large background text shown when no book is focused." },
+      { prop: "navTitle", type: "string", defaultValue: "'Bestsellers'", description: "The small heading displayed above the book collection." },
+      { prop: "showNav", type: "boolean", defaultValue: "true", description: "Whether to show the top navigation bar." },
+      { prop: "showDetailPanel", type: "boolean", defaultValue: "true", description: "Whether to show the details panel when a book is clicked." },
+      { prop: "showCarousel", type: "boolean", defaultValue: "true", description: "Whether to show carousel controls when more than three books are supplied." },
+      { prop: "themeColors", type: "BooksShowcaseTheme", defaultValue: "-", description: "Overrides accent colors plus independent light/dark backgrounds and foregrounds." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the main wrapper." },
+      { prop: "onBookSelect", type: "(book: BookCfg | null) => void", defaultValue: "-", description: "Callback triggered when a book is selected or deselected." },
+    ],
+    additionalPropSections: [
+      {
+        title: "BookCfg",
+        data: [
+          { prop: "id", type: "string", defaultValue: "-", description: "Unique identifier for the book." },
+          { prop: "title", type: "string", defaultValue: "-", description: "Title of the book." },
+          { prop: "author", type: "string", defaultValue: "-", description: "Author of the book." },
+          { prop: "year", type: "string", defaultValue: "-", description: "Publication year." },
+          { prop: "stars", type: "number", defaultValue: "-", description: "Number of stars (out of 5) for the rating." },
+          { prop: "desc", type: "string", defaultValue: "-", description: "Short description or synopsis." },
+          { prop: "coverURL", type: "string", defaultValue: "null", description: "Optional URL for the front cover image (jpg/png/webp)." },
+          { prop: "spineBg", type: "string", defaultValue: "-", description: "Hex color for the spine background." },
+          { prop: "spineInk", type: "string", defaultValue: "-", description: "Hex color for the spine text." },
+          { prop: "backBg", type: "string", defaultValue: "-", description: "Hex color for the back cover background." },
+          { prop: "backInk", type: "string", defaultValue: "-", description: "RGB comma-separated color for back cover text (e.g., '255,255,255')." },
+          { prop: "edge", type: "string", defaultValue: "-", description: "Hex color for the page edges." },
+        ],
+      },
+      {
+        title: "themeColors",
+        data: [
+          { prop: "navy", type: "string", defaultValue: "'#141a32'", description: "Detail-view background and primary dark accent." },
+          { prop: "pink", type: "string", defaultValue: "'#f591ac'", description: "Detail title and rating accent." },
+          { prop: "cream", type: "string", defaultValue: "'#fdfbf4'", description: "High-contrast controls and labels." },
+          { prop: "lav", type: "string", defaultValue: "'#c9d0ee'", description: "Detail body copy and muted controls." },
+          { prop: "peri", type: "string", defaultValue: "'#96a2de'", description: "Primary action background." },
+          { prop: "bgLight", type: "string", defaultValue: "'#fafafa'", description: "Hero background in light mode." },
+          { prop: "bgDark", type: "string", defaultValue: "'#18181b'", description: "Hero background in dark mode." },
+          { prop: "foregroundLight", type: "string", defaultValue: "'#18181b'", description: "Hero text in light mode." },
+          { prop: "foregroundDark", type: "string", defaultValue: "'#fafafa'", description: "Hero text in dark mode." },
+        ],
+      },
+    ],
+  },
+    "model-viewer": {
+    dependencies: "npm install three @react-three/fiber @react-three/drei clsx tailwind-merge",
+    includeUtils: true,
+    manualNotes: [
+      "This is a client component because it renders a WebGL canvas with React Three Fiber.",
+      "Set modelUrl to a .glb file inside your public folder. If the model uses external textures, keep them next to it at the same relative path (for example public/models/Textures/colormap.png).",
+      "Drag to rotate and scroll to zoom. Click the viewer to focus it, then use the arrow keys to rotate.",
+      "The viewer fills its parent's width and is 400px tall by default. Pass className (for example h-[600px]) to change the size.",
+    ],
+    usageCode: `import { ModelViewer } from "@/components/ui/model-viewer"
+
+export function ModelViewerDemo() {
+  return (
+    <ModelViewer
+      modelUrl="/models/sample.glb"
+      className="h-[500px]"
+    />
+  )
+}`,
+    props: [
+      { prop: "modelUrl", type: "string", defaultValue: "'/models/sample.glb'", description: "Path or URL of the .glb model to display." },
+      { prop: "className", type: "string", defaultValue: "-", description: "Additional CSS classes for the viewer container." },
+    ],
+    credits: {
+      author: "GraceyDugar",
+      github: "https://github.com/GraceyDugar",
+      twitter: "https://x.com/CreativeGracey",
+      description: "Designed and contributed the Model Viewer component to the Vengeance UI catalog.",
+    },
   },
 };

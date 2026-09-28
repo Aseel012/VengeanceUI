@@ -1,0 +1,65 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "individual",
+    "role": "maintainer",
+    "name": "Ashutosh Singh",
+    "email": "ashutoshx002@gmail.com",
+    "description": "Ashutosh Singh is the creator and lead maintainer of VengeanceUI, an open-source animated React and Next.js component library. He maintains the codebase, component registry, documentation, releases, testing infrastructure, contributor workflow, and community support. His broader open-source experience includes sustained contributions to developer tooling and structured open-source mentorship programs.",
+    "webpageUrl": {
+      "url": "https://github.com/Ashutoshx7"
+    }
+  },
+  "projects": [
+    {
+      "guid": "vengeanceui",
+      "name": "VengeanceUI",
+      "description": "VengeanceUI is an MIT-licensed open-source library of animated, copy-paste-friendly React and Next.js components for modern web interfaces. It provides live previews, reusable source code, implementation guidance, and a shadcn-compatible registry. The project has nearly 1,000 GitHub stars and 80 forks, serves 40,000+ monthly visitors, and receives 500,000+ monthly page views. Funding will support accessibility, reduced-motion support, automated visual and cross-browser testing, performance improvements, registry reliability, documentation, contributor onboarding, and a stable public release.",
+      "webpageUrl": {
+        "url": "https://www.vengenceui.com/"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/Ashutoshx7/VengeanceUI"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "open-source",
+        "react",
+        "typescript",
+        "nextjs",
+        "component-library",
+        "developer-tools",
+        "frontend",
+        "accessibility",
+        "web-development",
+        "design-system"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "grant-bank-transfer",
+        "type": "bank",
+        "description": "Banking and compliance details will be shared privately with FOSS United after approval."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "six-month-maintenance-grant",
+        "status": "active",
+        "name": "VengeanceUI six-month maintenance grant",
+        "description": "INR 240,000 for six months: INR 180,000 for maintainer time, INR 20,000 for testing and infrastructure, INR 20,000 for accessibility and performance, and INR 20,000 for documentation and contributor support. Work will cover accessibility and reduced-motion improvements, visual and cross-browser tests, registry reliability, performance optimization, contributor documentation, a stable release, and public progress reports.",
+        "amount": 240000,
+        "currency": "INR",
+        "frequency": "one-time",
+        "channels": [
+          "grant-bank-transfer"
+        ]
+      }
+    ]
+  }
+}

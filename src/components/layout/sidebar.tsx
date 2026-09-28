@@ -38,6 +38,7 @@ const SIDEBAR_SECTIONS: Array<{
     items: [
       { name: "Install Next.js", href: "/docs/install-nextjs" },
       { name: "Install Tailwind CSS", href: "/docs/install-tailwind" },
+      { name: "Theming", href: "/docs/theming" },
       { name: "Add utilities", href: "/docs/add-utilities" },
       { name: "CLI", href: "/docs/cli" },
     ],
@@ -90,7 +91,7 @@ const SidebarItem = memo(function SidebarItem({
       <Link
         href={item.href}
         onClick={item.external ? undefined : handleClick}
-        prefetch={item.external ? false : true}
+        prefetch={false}
         target={item.external ? "_blank" : undefined}
         rel={item.external ? "noopener noreferrer" : undefined}
         className={cn(

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "model-viewer",
+  "type": "registry:ui",
+  "dependencies": [
+    "three",
+    "@react-three/fiber",
+    "@react-three/drei"
+  ],
+  "files": [
+    {
+      "path": "components/ui/model-viewer.tsx",
+      "content": "\"use client\";\n\nimport { Suspense, useRef, type ComponentRef, type KeyboardEvent } from \"react\";\nimport * as THREE from \"three\";\nimport { Canvas } from \"@react-three/fiber\";\nimport { OrbitControls, useGLTF, Center } from \"@react-three/drei\";\nimport { cn } from \"@/lib/utils\";\n\nconst STEP = Math.PI / 12; // 15 degrees per key press\n\nfunction Model({ url }: { url: string }) {\n  const { scene } = useGLTF(url);\n  return (\n    <Center>\n      <primitive object={scene} />\n    </Center>\n  );\n}\n\nexport interface ModelViewerProps {\n  /** Path to a .glb file (default: /models/sample.glb) */\n  modelUrl?: string;\n  /** Additional CSS classes */\n  className?: string;\n}\n\nexport function ModelViewer({ modelUrl = \"/models/sample.glb\", className }: ModelViewerProps) {\n  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);\n\n  function rotate(dTheta: number, dPhi: number) {\n    const controls = controlsRef.current;\n    if (!controls) return;\n\n    // camera position relative to the model, as angles\n    const offset = controls.object.position.clone().sub(controls.target);\n    const spherical = new THREE.Spherical().setFromVector3(offset);\n\n    spherical.theta += dTheta;\n    spherical.phi = THREE.MathUtils.clamp(spherical.phi + dPhi, 0.1, Math.PI - 0.1);\n\n    offset.setFromSpherical(spherical);\n    controls.object.position.copy(controls.target).add(offset);\n    controls.update();\n  }\n\n  function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {\n    switch (e.key) {\n      case \"ArrowLeft\":\n        rotate(-STEP, 0);\n        break;\n      case \"ArrowRight\":\n        rotate(STEP, 0);\n        break;\n      case \"ArrowUp\":\n        rotate(0, -STEP);\n        break;\n      case \"ArrowDown\":\n        rotate(0, STEP);\n        break;\n      default:\n        return; // ignore other keys\n    }\n    e.preventDefault(); // stop the page from scrolling\n  }\n\n  return (\n    <div\n      tabIndex={0}\n      onKeyDown={handleKeyDown}\n      aria-label=\"3D model viewer. Use arrow keys to rotate.\"\n      className={cn(\"h-[400px] w-full outline-none focus-visible:ring-2 focus-visible:ring-white/40\", className)}\n    >\n      <Canvas camera={{ position: [3, 2, 5], fov: 45 }}>\n        <ambientLight intensity={1} />\n        <directionalLight position={[5, 5, 5]} />\n        <Suspense fallback={null}>\n          <Model url={modelUrl} />\n        </Suspense>\n        <OrbitControls ref={controlsRef} />\n      </Canvas>\n    </div>\n  );\n}\n\nexport default ModelViewer;",
+      "type": "registry:ui",
+      "target": "components/ui/model-viewer.tsx"
+    }
+  ]
+}

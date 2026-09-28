@@ -820,6 +820,17 @@
     ]
   },
   {
+    "name": "research-bento-grid",
+    "dependencies": [
+      "framer-motion",
+      "react-icons"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/research-bento-grid.json"
+    ]
+  },
+  {
     "name": "resizable",
     "dependencies": [
       "lucide-react"
@@ -980,6 +991,16 @@
     ]
   },
   {
+    "name": "stagger-text",
+    "dependencies": [
+      "framer-motion"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/stagger-text.json"
+    ]
+  },
+  {
     "name": "staggered-grid",
     "dependencies": [
       "gsap"
@@ -1024,6 +1045,14 @@
     "type": "registry:ui",
     "files": [
       "public/r/testimonials-card.json"
+    ]
+  },
+  {
+    "name": "team-reveal-grid",
+    "dependencies": [],
+    "type": "registry:ui",
+    "files": [
+      "public/r/team-reveal-grid.json"
     ]
   },
   {
@@ -1086,6 +1115,27 @@
     "type": "registry:ui",
     "files": [
       "public/r/typing-keyboard.json"
+    ]
+  },
+  {
+    "name": "mega-menu-navbar",
+    "dependencies": [
+      "lucide-react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/mega-menu-navbar.json"
+    ]
+  },
+  {
+    "name": "gooey-text-reveal",
+    "dependencies": [
+      "gsap",
+      "@gsap/react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/gooey-text-reveal.json"
     ]
   }
 ]

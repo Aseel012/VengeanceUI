@@ -93,6 +93,17 @@
     ]
   },
   {
+    "name": "awwwards-nav",
+    "dependencies": [
+      "gsap",
+      "@phosphor-icons/react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/awwwards-nav.json"
+    ]
+  },
+  {
     "name": "badge",
     "dependencies": [
       "@radix-ui/react-slot"
@@ -196,6 +207,16 @@
     "type": "registry:ui",
     "files": [
       "public/r/checkbox.json"
+    ]
+  },
+  {
+    "name": "circular-gallery",
+    "dependencies": [
+      "gsap"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/circular-gallery.json"
     ]
   },
   {
@@ -472,6 +493,14 @@
     ]
   },
   {
+    "name": "highlight-grid",
+    "dependencies": [],
+    "type": "registry:ui",
+    "files": [
+      "public/r/highlight-grid.json"
+    ]
+  },
+  {
     "name": "hover-card",
     "dependencies": [
       "@radix-ui/react-hover-card"
@@ -702,6 +731,16 @@
     ]
   },
   {
+    "name": "music-player",
+    "dependencies": [
+      "lucide-react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/music-player.json"
+    ]
+  },
+  {
     "name": "navigation-menu",
     "dependencies": [
       "lucide-react",
@@ -820,6 +859,17 @@
     ]
   },
   {
+    "name": "research-bento-grid",
+    "dependencies": [
+      "framer-motion",
+      "react-icons"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/research-bento-grid.json"
+    ]
+  },
+  {
     "name": "resizable",
     "dependencies": [
       "lucide-react"
@@ -848,6 +898,16 @@
     "type": "registry:ui",
     "files": [
       "public/r/scroll-area.json"
+    ]
+  },
+  {
+    "name": "search-modal",
+    "dependencies": [
+      "@phosphor-icons/react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/search-modal.json"
     ]
   },
   {
@@ -980,6 +1040,26 @@
     ]
   },
   {
+    "name": "stagger-text",
+    "dependencies": [
+      "framer-motion"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/stagger-text.json"
+    ]
+  },
+  {
+    "name": "stats-counter",
+    "dependencies": [
+      "framer-motion"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/stats-counter.json"
+    ]
+  },
+  {
     "name": "staggered-grid",
     "dependencies": [
       "gsap"
@@ -1024,6 +1104,14 @@
     "type": "registry:ui",
     "files": [
       "public/r/testimonials-card.json"
+    ]
+  },
+  {
+    "name": "team-reveal-grid",
+    "dependencies": [],
+    "type": "registry:ui",
+    "files": [
+      "public/r/team-reveal-grid.json"
     ]
   },
   {
@@ -1086,6 +1174,98 @@
     "type": "registry:ui",
     "files": [
       "public/r/typing-keyboard.json"
+    ]
+  },
+  {
+    "name": "gooey-search",
+    "dependencies": [
+      "framer-motion"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/gooey-search.json"
+    ]
+  },
+  {
+    "name": "animated-tooltip",
+    "dependencies": [
+      "framer-motion"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/animated-tooltip.json"
+    ]
+  },
+  {
+    "name": "vengeance-theme",
+    "dependencies": [],
+    "type": "registry:theme",
+    "files": [
+      "public/r/vengeance-theme.json"
+    ]
+  },
+  {
+    "name": "verse-cards",
+    "dependencies": [
+      "gsap",
+      "lucide-react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/verse-cards.json"
+    ]
+  },
+  {
+    "name": "wave-grid-background",
+    "dependencies": [
+      "three"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/wave-grid-background.json"
+    ]
+  },
+  {
+    "name": "interactive-particles",
+    "dependencies": [
+      "three",
+      "gsap"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/interactive-particles.json"
+    ]
+  },
+  {
+    "name": "animated-footer",
+    "dependencies": [
+      "gsap",
+      "next-themes"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/animated-footer.json"
+    ]
+  },
+  {
+    "name": "mega-menu-navbar",
+    "dependencies": [
+      "lucide-react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/mega-menu-navbar.json"
+    ]
+  },
+  {
+    "name": "gooey-text-reveal",
+    "dependencies": [
+      "gsap",
+      "@gsap/react"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/gooey-text-reveal.json"
     ]
   }
 ]

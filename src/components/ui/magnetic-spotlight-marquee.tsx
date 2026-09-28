@@ -231,7 +231,7 @@ export function MagneticSpotlightMarquee({
     <section
       ref={containerRef}
       className={cn(
-        "spotlight relative w-full h-[100vh] min-h-[800px] overflow-hidden bg-white text-white font-sans",
+        "spotlight relative w-full h-[100vh] min-h-[800px] overflow-hidden bg-white dark:bg-[#0f0f0f] text-white font-sans",
         className
       )}
       style={{ fontFamily: "'Instrument Sans', sans-serif" }}
@@ -253,7 +253,7 @@ export function MagneticSpotlightMarquee({
           className="spotlight-marquee-track flex gap-4 h-full items-center absolute top-0 left-0"
         >
           {clonedImages.map((img, idx) => (
-            <div key={idx} className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] shrink-0 rounded-[20px] overflow-hidden shadow-sm bg-neutral-100">
+            <div key={idx} className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] shrink-0 rounded-[20px] overflow-hidden shadow-sm bg-neutral-100 dark:bg-neutral-900">
               <img
                 src={img}
                 alt="Marquee item"

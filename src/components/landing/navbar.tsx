@@ -1,15 +1,13 @@
 'use client'
-import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useMemo, memo, useCallback, useEffect } from 'react'
+import { useState, useMemo, memo, useCallback, useEffect, useRef } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { KitSwitcher } from '@/components/kit-switcher'
 import { cn } from '@/lib/utils'
-import { Separator } from '@/components/ui/separator'
 import { Menu, Star, X } from 'lucide-react'
-import { Dialog, DialogClose, DialogTitle, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import LogoIcon from '@/assets/logo/logo-icon'
 import { NavbarCommandSearch } from './navbar-command-search'
 import { GITHUB_REPO_URL } from '@/lib/github'
@@ -124,6 +122,8 @@ const GitHubStarLink = memo(function GitHubStarLink({ className }: { className?:
 export const Navbar = memo(function Navbar() {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
+    const headerRef = useRef<HTMLElement>(null)
+    const menuButtonRef = useRef<HTMLButtonElement>(null)
 
     const isActive = useCallback((path: string) => {
         return pathname === path || pathname.startsWith(`${path}/`)
@@ -131,26 +131,57 @@ export const Navbar = memo(function Navbar() {
 
     const closeMenu = useCallback(() => setIsOpen(false), [])
 
+    useEffect(() => {
+        if (!isOpen) return
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closeMenu()
+                menuButtonRef.current?.focus()
+            }
+        }
+        const onPointerDown = (event: PointerEvent) => {
+            // Radix renders the search dialog and kit list outside the header.
+            if (event.target instanceof Element && event.target.closest('[data-slot="dialog-content"], [data-slot="select-content"]')) return
+            if (!headerRef.current?.contains(event.target as Node)) closeMenu()
+        }
+        const desktopBreakpoint = window.matchMedia('(min-width: 1024px)')
+        const onBreakpointChange = () => {
+            if (desktopBreakpoint.matches) closeMenu()
+        }
+
+        document.addEventListener('keydown', onKeyDown)
+        document.addEventListener('pointerdown', onPointerDown)
+        desktopBreakpoint.addEventListener('change', onBreakpointChange)
+        return () => {
+            document.removeEventListener('keydown', onKeyDown)
+            document.removeEventListener('pointerdown', onPointerDown)
+            desktopBreakpoint.removeEventListener('change', onBreakpointChange)
+        }
+    }, [closeMenu, isOpen])
+
     // Pre-compute active states to avoid recalculating in render
     const activeStates = useMemo(() => ({
         templates: isActive('/templates'),
         docs: isActive('/docs'),
+        sponsors: isActive('/sponsors'),
     }), [isActive])
 
     return (
-        <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
+        <header ref={headerRef} className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
             <div className="w-full px-4 md:px-8 xl:px-8">
                 <div>
                     <div className="flex items-center justify-between py-3 lg:py-4">
                         <Link
                             href="/"
                             className="flex w-fit items-center gap-3"
+                            onClick={closeMenu}
                             prefetch={true}>
                             <LogoIcon className="w-6 text-foreground rotate-180" />
                             <span className="font-orbitron text-xl font-bold tracking-tight -ml-2">Vengeance UI</span>
                         </Link>
 
-                        <div className="-mr-2 hidden items-center gap-4 sm:flex">
+                        <div className="-mr-2 hidden items-center gap-4 min-[1024px]:flex">
                             <NavbarCommandSearch />
 
                             <div className="flex items-center gap-1">
@@ -173,10 +204,20 @@ export const Navbar = memo(function Navbar() {
                                     variant="ghost"
                                     className={cn('text-foreground/75 rounded-full', activeStates.docs && 'text-foreground')}>
                                     <Link
-                                        href="/docs"
+                                        href="/docs/install-nextjs"
                                         prefetch={true}
                                         className="text-sm!">
                                         Docs
+                                    </Link>
+                                </Button>
+
+                                <Button
+                                    asChild
+                                    size="sm"
+                                    variant="ghost"
+                                    className={cn('text-foreground/75 rounded-full', activeStates.sponsors && 'text-foreground')}>
+                                    <Link href="/sponsors" prefetch={true} className="text-sm!" aria-current={activeStates.sponsors ? 'page' : undefined}>
+                                        Sponsors
                                     </Link>
                                 </Button>
                             </div>
@@ -187,105 +228,98 @@ export const Navbar = memo(function Navbar() {
                             </div>
                         </div>
 
-                        <div className="-mr-2 flex items-center gap-2 sm:hidden">
+                        <div className="-mr-2 flex items-center gap-2 min-[1024px]:hidden">
                             <ThemeToggle />
 
-                            <Dialog
-                                open={isOpen}
-                                onOpenChange={setIsOpen}>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className={cn('size-8', isOpen && 'opacity-0')}>
-                                        <Menu className="size-5" />
-                                        <span className="sr-only">Toggle menu</span>
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="inset-y-4 translate-y-0 px-0 py-2">
-                                    <DialogTitle className="sr-only">Mobile menu</DialogTitle>
-                                    <div className="flex flex-col gap-3">
-                                        <div className="flex items-center justify-between pl-6 pr-3 pt-2">
-                                            <Link
-                                                href="/"
-                                                className="flex w-fit items-center gap-0"
-                                                onClick={closeMenu}>
-                                                <Image
-                                                    src="/logo/bg-less.png"
-                                                    alt="Vengeance UI"
-                                                    width={48}
-                                                    height={48}
-                                                    className="w-12 rotate-180"
-                                                />
-                                                <span className="font-orbitron font-bold tracking-tight -ml-3">Vengeance UI</span>
-                                            </Link>
-                                            <DialogClose asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon">
-                                                    <X className="size-5!" />
-                                                    <span className="sr-only">Close menu</span>
-                                                </Button>
-                                            </DialogClose>
-                                        </div>
-
-                                        <div className="pr-1.25 border-y py-2 pl-6">
-                                            <KitSwitcher />
-                                        </div>
-
-                                        <div className="flex flex-col gap-2 px-3 pt-3">
-                                            <Button
-                                                asChild
-                                                size="sm"
-                                                variant="ghost"
-                                                className={cn('justify-start', activeStates.templates && 'bg-accent')}>
-                                                <Link
-                                                    href="/templates"
-                                                    className="text-sm!"
-                                                    onClick={closeMenu}>
-                                                    Templates
-                                                </Link>
-                                            </Button>
-                                            <Button
-                                                asChild
-                                                size="sm"
-                                                variant="ghost"
-                                                className={cn('justify-start', activeStates.docs && 'bg-accent')}>
-                                                <Link
-                                                    href="/docs"
-                                                    className="text-sm!"
-                                                    onClick={closeMenu}>
-                                                    Docs
-                                                </Link>
-                                            </Button>
-                                        </div>
-
-                                        <Separator className="my-2 border-t" />
-
-                                        <div className="flex items-center gap-2 px-5">
-                                            <Button
-                                                asChild
-                                                variant="ghost"
-                                                size="sm"
-                                                className="size-8 rounded-full">
-                                                <Link
-                                                    href="https://x.com/Ashutosh_7x7"
-                                                    target="_blank"
-                                                    aria-label="x/twitter"
-                                                    rel="noreferrer"
-                                                    className="text-sm">
-                                                    <XIcon />
-                                                </Link>
-                                            </Button>
-                                            <GitHubStarLink />
-                                        </div>
-                                    </div>
-                                </DialogContent>
-                            </Dialog>
+                            <Button
+                                ref={menuButtonRef}
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsOpen((prev) => !prev)}
+                                className="size-8"
+                                aria-label={isOpen ? "Close menu" : "Open menu"}
+                                aria-expanded={isOpen}
+                                aria-controls="mobile-navigation">
+                                {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+                            </Button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Top Dropdown Overlay Menu */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        id="mobile-navigation"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        className="absolute left-0 right-0 top-full overflow-hidden border-b border-neutral-200 bg-background/98 dark:border-[#222] dark:bg-[#050608]/98 backdrop-blur shadow-2xl min-[1024px]:hidden z-50">
+                        <div className="flex max-h-[calc(100dvh-4rem)] flex-col gap-3 overflow-y-auto px-6 py-4">
+                            <div className="pb-1">
+                                <NavbarCommandSearch onNavigate={closeMenu} />
+                            </div>
+
+                            <div className="border-t border-neutral-200/60 pt-3 dark:border-zinc-800/60">
+                                <KitSwitcher onNavigate={closeMenu} />
+                            </div>
+
+                            <div className="flex flex-col gap-1 border-t border-neutral-200/60 dark:border-zinc-800/60 pt-3">
+                                <Button
+                                    asChild
+                                    size="sm"
+                                    variant="ghost"
+                                    className={cn('justify-start text-sm font-medium', activeStates.templates && 'bg-accent')}>
+                                    <Link
+                                        href="/templates"
+                                        onClick={closeMenu}>
+                                        Templates
+                                    </Link>
+                                </Button>
+                                <Button
+                                    asChild
+                                    size="sm"
+                                    variant="ghost"
+                                    className={cn('justify-start text-sm font-medium', activeStates.docs && 'bg-accent')}>
+                                    <Link
+                                        href="/docs/install-nextjs"
+                                        onClick={closeMenu}>
+                                        Docs
+                                    </Link>
+                                </Button>
+                                <Button
+                                    asChild
+                                    size="sm"
+                                    variant="ghost"
+                                    className={cn('justify-start text-sm font-medium', activeStates.sponsors && 'bg-accent')}>
+                                    <Link href="/sponsors" onClick={closeMenu} aria-current={activeStates.sponsors ? 'page' : undefined}>
+                                        Sponsors
+                                    </Link>
+                                </Button>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-3 border-t border-neutral-200/60 dark:border-zinc-800/60">
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    size="sm"
+                                    className="size-8 rounded-full">
+                                    <Link
+                                        href="https://x.com/Ashutosh_7x7"
+                                        target="_blank"
+                                        aria-label="x/twitter"
+                                        rel="noreferrer">
+                                        <XIcon />
+                                    </Link>
+                                </Button>
+                                <GitHubStarLink />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </header>
     )
 })

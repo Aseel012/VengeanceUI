@@ -1,0 +1,186 @@
+"use client";
+
+import * as React from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { CopyButton } from "@/components/ui/copy-button";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { Highlight, type PrismTheme } from "prism-react-renderer";
+import { selectRegistrySource, type RegistrySourceFile } from "@/lib/registry";
+
+const vibrantLightTheme: PrismTheme = {
+  plain: {
+    color: "#52525b",
+    backgroundColor: "transparent",
+  },
+  styles: [
+    { types: ["comment", "prolog", "doctype", "cdata"], style: { color: "#a1a1aa", fontStyle: "italic" } },
+    { types: ["punctuation", "operator"], style: { color: "#71717a" } },
+    { types: ["property", "tag", "boolean", "number", "constant", "symbol", "deleted"], style: { color: "#4a7f94" } },
+    { types: ["selector", "attr-name", "string", "char", "builtin", "inserted"], style: { color: "#8a6d3b" } },
+    { types: ["url", "variable", "function", "class-name"], style: { color: "#3d7a5f" } },
+    { types: ["atrule", "attr-value", "keyword"], style: { color: "#6b6b99" } },
+    { types: ["regex", "important"], style: { color: "#996b6b" } },
+  ],
+};
+
+const vibrantDarkTheme: PrismTheme = {
+  plain: {
+    color: "#a1a1aa",
+    backgroundColor: "transparent",
+  },
+  styles: [
+    { types: ["comment", "prolog", "doctype", "cdata"], style: { color: "#3f3f46", fontStyle: "italic" } },
+    { types: ["punctuation", "operator"], style: { color: "#52525b" } },
+    { types: ["property", "tag", "boolean", "number", "constant", "symbol", "deleted"], style: { color: "#8bb8d0" } },
+    { types: ["selector", "attr-name", "string", "char", "builtin", "inserted"], style: { color: "#c9a87c" } },
+    { types: ["url", "variable", "function", "class-name"], style: { color: "#8ec8b0" } },
+    { types: ["atrule", "attr-value", "keyword"], style: { color: "#a0a0cc" } },
+    { types: ["regex", "important"], style: { color: "#c4908a" } },
+  ],
+};
+
+interface RegistryItem {
+  files?: RegistrySourceFile[];
+}
+
+interface SourceRequestState {
+  componentName: string;
+  source: string | null;
+  error: string | null;
+}
+
+interface DeferredSourceCodeProps {
+  componentName: string;
+  fallbackSource?: string;
+  title?: string;
+  expandable?: boolean;
+  className?: string;
+}
+
+export function DeferredSourceCode({
+  componentName,
+  fallbackSource,
+  title,
+  expandable = false,
+  className,
+}: DeferredSourceCodeProps) {
+  const [requestState, setRequestState] = React.useState<SourceRequestState | null>(null);
+  const [expanded, setExpanded] = React.useState(!expandable);
+  const { resolvedTheme } = useTheme();
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const currentTheme = isMounted
+    ? resolvedTheme === "dark"
+      ? vibrantDarkTheme
+      : vibrantLightTheme
+    : vibrantLightTheme;
+
+  const activeRequest = requestState?.componentName === componentName ? requestState : null;
+  const source = fallbackSource ?? activeRequest?.source ?? null;
+  const error = fallbackSource ? null : activeRequest?.error ?? null;
+
+  React.useEffect(() => {
+    if (fallbackSource) return;
+
+    const controller = new AbortController();
+
+    async function loadSource() {
+      try {
+        const response = await fetch(`/r/${encodeURIComponent(componentName)}.json`, {
+          cache: "force-cache",
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error(`Registry returned ${response.status}`);
+
+        const item = (await response.json()) as RegistryItem;
+        const content = selectRegistrySource(item.files ?? [], componentName);
+        if (!content) throw new Error("The registry item does not contain source code");
+        setRequestState({ componentName, source: content, error: null });
+      } catch (loadError) {
+        if (controller.signal.aborted) return;
+        setRequestState({
+          componentName,
+          source: null,
+          error: loadError instanceof Error ? loadError.message : "Unable to load source code",
+        });
+      }
+    }
+
+    loadSource();
+    return () => controller.abort();
+  }, [componentName, fallbackSource]);
+
+  if (error && source === null) {
+    return (
+      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300" role="alert">
+        Source code could not be loaded: {error}.
+      </div>
+    );
+  }
+
+  if (source === null) {
+    return (
+      <div className="flex min-h-40 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 text-sm text-neutral-500 dark:border-zinc-800 dark:bg-black dark:text-zinc-400" role="status">
+        <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        Loading source code…
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("group/code relative overflow-hidden rounded-md border border-neutral-200 bg-neutral-50 shadow-sm dark:border-zinc-800/80 dark:bg-black", className)}>
+      <div className="flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-2.5 dark:border-zinc-800/80 dark:bg-zinc-900/50">
+        <div className="flex items-center gap-2">
+          <div className="size-2 rounded-full bg-emerald-500" />
+          <span className="text-xs font-medium text-neutral-500 dark:text-zinc-300">
+            {title ?? `${componentName}.tsx`}
+          </span>
+        </div>
+        <CopyButton
+          code={source}
+          className="h-7 w-7 border-none bg-transparent text-neutral-400 transition-all hover:bg-neutral-100 hover:text-neutral-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+        />
+      </div>
+
+      <div className={cn("relative overflow-hidden", expandable && !expanded && "max-h-[440px]")}>
+        <div className="overflow-x-auto p-4 text-sm font-mono leading-relaxed scrollbar-hide selection:bg-neutral-200 dark:selection:bg-zinc-800">
+          <Highlight theme={currentTheme} code={source} language="tsx">
+            {({ style, tokens, getLineProps, getTokenProps }) => (
+              <pre style={{ ...style, backgroundColor: "transparent", margin: 0, padding: 0 }}>
+                {tokens.map((line, i) => (
+                  <div key={i} {...getLineProps({ line })} className="table-row">
+                    <span className="table-cell">
+                      {line.map((token, key) => (
+                        <span key={key} {...getTokenProps({ token })} />
+                      ))}
+                    </span>
+                  </div>
+                ))}
+              </pre>
+            )}
+          </Highlight>
+        </div>
+        {expandable && !expanded && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-neutral-50 to-transparent dark:from-black" />
+        )}
+      </div>
+
+      {expandable && (
+        <button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          className="flex w-full items-center justify-center gap-2 border-t border-neutral-200 bg-white px-4 py-2.5 text-xs font-medium text-neutral-600 hover:bg-neutral-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+        >
+          {expanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+          {expanded ? "Collapse source" : "Show complete source"}
+        </button>
+      )}
+    </div>
+  );
+}

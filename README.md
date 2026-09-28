@@ -13,26 +13,6 @@
 ---
 
 <p align="center">
-  <strong>Community Token CA</strong>
-</p>
-
-<p align="center">
-  <code>C5x6c7mJsJrw23JeMF1hfZvre4gQaA5JNSSLwnjGpump</code>
-</p>
-
-<p align="center">
-  <a href="https://dexscreener.com/solana/dypltbkb3c5c6worztaba4dghhjz7p86zvftdebvt5db">
-    <strong>View on DEX Screener</strong>
-  </a>
-</p>
-
-<p align="center">
-  <sub>Always verify the CA from official VengeanceUI sources before interacting with it.</sub>
-</p>
-
----
-
-<p align="center">
   <a href="https://github.com/Ashutoshx7/VengeanceUI/stargazers">
     <img src="https://img.shields.io/github/stars/Ashutoshx7/VengeanceUI?style=social" alt="GitHub stars" />
   </a>
@@ -62,6 +42,10 @@
   <a href="https://vercel.com/oss">
     <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge-2026.svg" width="260" />
   </a>
+</p>
+
+<p align="center">
+  <strong>This project is tested with BrowserStack</strong>
 </p>
 
 ---
@@ -175,6 +159,22 @@ If you want to improve an existing component, add a new component, fix bugs, or 
 If you like VengeanceUI, consider giving the repository a star.
 
 It helps the project grow and reach more builders.
+
+## Sponsors
+
+Platform sponsors: [Mintlify](https://www.mintlify.com/), [Sentry](https://sentry.io/), [BrowserStack](https://www.browserstack.com/), [Sarvam AI](https://www.sarvam.ai/), and the [Vercel OSS Program](https://vercel.com/oss).
+
+Community sponsorships help fund the project directly. [See the Diamond, Gold, and Silver plans](https://www.vengenceui.com/sponsors) to have your name or logo displayed here and on the website.
+
+Maintainers: [set up Stripe sponsorship checkout](docs/stripe-sponsorship.md) before enabling online payments.
+
+<!-- Paid community sponsors are added here after their display details are confirmed. -->
+
+---
+
+## License
+
+VengeanceUI is released under the [MIT License](LICENSE).
 
 <p align="center">
   <strong>Built by <a href="https://github.com/Ashutoshx7">Ashutosh</a></strong>

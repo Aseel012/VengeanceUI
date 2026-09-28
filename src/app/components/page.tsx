@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, Boxes, Sparkles } from "lucide-react";
+import { ArrowUpRight, Boxes, MessageSquarePlus, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COMPONENT_CATEGORIES } from "@/lib/components-catalog";
+import { GITHUB_COMPONENT_REQUEST_URL } from "@/lib/github";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -60,6 +61,16 @@ export default function ComponentsIndexPage() {
               >
                 <Link href="/docs/cli">CLI install</Link>
               </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="border-foreground/10 bg-transparent text-foreground/85 shadow-none hover:border-foreground/20 hover:bg-foreground/[0.045] dark:border-white/10 dark:hover:bg-white/[0.055]"
+              >
+                <Link href={GITHUB_COMPONENT_REQUEST_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageSquarePlus className="size-4" />
+                  Request a component
+                </Link>
+              </Button>
             </div>
           </div>
 
@@ -90,7 +101,7 @@ export default function ComponentsIndexPage() {
             <div
               key={category.name}
               className={cn(
-                "border-r border-t border-border/70 bg-card p-5 first:border-t-0 md:[&:nth-child(2)]:border-t-0 xl:[&:nth-child(3)]:border-t-0",
+                "min-w-0 border-r border-t border-border/70 bg-card p-5 first:border-t-0 md:[&:nth-child(2)]:border-t-0 xl:[&:nth-child(3)]:border-t-0",
                 "md:[&:nth-child(2n)]:border-r-0 xl:[&:nth-child(2n)]:border-r xl:[&:nth-child(3n)]:border-r-0",
               )}
             >
@@ -116,10 +127,11 @@ export default function ComponentsIndexPage() {
                   <Link
                     key={item.slug}
                     href={`/components/${item.slug}`}
-                    className="group border border-transparent px-3 py-2 transition-colors hover:border-border hover:bg-muted/40"
+                    prefetch={false}
+                    className="group block min-w-0 border border-transparent px-3 py-2 transition-colors hover:border-border hover:bg-muted/40"
                   >
-                    <span className="flex items-center justify-between gap-3">
-                      <span className="min-w-0">
+                    <span className="flex min-w-0 items-center justify-between gap-3">
+                      <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium group-hover:text-foreground">{item.name}</span>
                         <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.description}</span>
                       </span>
@@ -131,6 +143,26 @@ export default function ComponentsIndexPage() {
             </div>
           );
         })}
+      </section>
+
+      <section className="border-b border-border/70 py-8">
+        <div className="flex flex-col items-start justify-between gap-4 border border-foreground/10 bg-foreground/[0.035] p-6 sm:flex-row sm:items-center dark:bg-white/[0.035]">
+          <div className="max-w-xl">
+            <h2 className="font-orbitron text-lg font-semibold">Can&apos;t find what you need?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Request a component and describe the animation you want. You can drag & drop images or a screen recording straight into the issue for reference.
+            </p>
+          </div>
+          <Button
+            asChild
+            className="shrink-0"
+          >
+            <Link href={GITHUB_COMPONENT_REQUEST_URL} target="_blank" rel="noopener noreferrer">
+              <MessageSquarePlus className="size-4" />
+              Request a component
+            </Link>
+          </Button>
+        </div>
       </section>
     </div>
   );

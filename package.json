@@ -2,6 +2,12 @@
   "name": "vengeance-ui-v2",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -63,6 +69,7 @@
     "recharts": "^3.10.1",
     "shiki": "^4.4.3",
     "sonner": "^2.0.8",
+    "stripe": "^22.6.2",
     "tailwind-merge": "^3.7.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.186.1",

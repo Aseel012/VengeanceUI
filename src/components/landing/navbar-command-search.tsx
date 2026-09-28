@@ -2,7 +2,7 @@
 
 import { startTransition, useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Code2, FileText, Home, LayoutGrid, Search, Sparkles } from 'lucide-react'
+import { Code2, FileText, HeartHandshake, Home, LayoutGrid, Search, Sparkles } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
     CommandDialog,
@@ -48,6 +48,13 @@ const PAGE_LINKS: PageLink[] = [
         icon: FileText,
     },
     {
+        title: 'Sponsors',
+        href: '/sponsors',
+        description: 'See who backs Vengeance UI and how to support the project.',
+        section: 'Page',
+        icon: HeartHandshake,
+    },
+    {
         title: 'Blocks',
         href: '/components/aurora-hero',
         description: 'Hero sections, backgrounds, and larger UI sections.',
@@ -63,7 +70,7 @@ const PAGE_LINKS: PageLink[] = [
     },
 ]
 
-export function NavbarCommandSearch() {
+export function NavbarCommandSearch({ onNavigate }: { onNavigate?: () => void }) {
     const router = useRouter()
     const [open, setOpen] = useState(false)
 
@@ -78,10 +85,11 @@ export function NavbarCommandSearch() {
 
     const runCommand = useCallback((href: string) => {
         setOpen(false)
+        onNavigate?.()
         startTransition(() => {
             router.push(href)
         })
-    }, [router])
+    }, [onNavigate, router])
 
     useEffect(() => {
         const down = (event: KeyboardEvent) => {
@@ -101,7 +109,7 @@ export function NavbarCommandSearch() {
                 type="button"
                 onClick={() => setOpen(true)}
                 className={cn(
-                    'group flex h-9 w-[260px] items-center justify-between rounded-md border border-foreground/10 bg-foreground/[0.035] px-3 text-sm text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors hover:border-foreground/15 hover:bg-foreground/[0.055] hover:text-foreground',
+                    'group flex h-9 w-full items-center justify-between rounded-md border border-foreground/10 bg-foreground/[0.035] px-3 text-sm text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors hover:border-foreground/15 hover:bg-foreground/[0.055] hover:text-foreground sm:w-[260px]',
                     'dark:border-white/10 dark:bg-white/[0.035] dark:hover:border-white/15 dark:hover:bg-white/[0.06]'
                 )}>
                 <span className="flex min-w-0 items-center gap-2">
