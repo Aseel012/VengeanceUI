@@ -6,13 +6,14 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=20.9.0"
+    "node": "^22.13.0 || >=24.0.0"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
