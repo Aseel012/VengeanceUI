@@ -2367,7 +2367,6 @@ export function ShareExample() {
       { prop: "initialOpen", type: "boolean", defaultValue: "false", description: "Open immediately when mounted." },
       { prop: "onShare", type: "(event) => void", defaultValue: "-", description: "Receives sharing intent with channel, URL, and optional message." },
     ],
-    credits: { author: "Enzo", github: "https://github.com/Aseel012/kavynui", description: "Originally built for kavynUI. QR generator by Kazuhiko Arase (MIT)." },
   },
     "model-viewer": {
     dependencies: "npm install three @react-three/fiber @react-three/drei clsx tailwind-merge",
