@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from 'react'
-import { useEffect, useId, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import qrcode from 'qrcode-generator' // MIT, © Kazuhiko Arase
@@ -10,6 +10,29 @@ import qrcode from 'qrcode-generator' // MIT, © Kazuhiko Arase
 // The QR encoder is qrcode-generator (MIT, Kazuhiko Arase). Pass a public URL.
 // `variant`: 'default' | 'message' | 'compact'. `theme`: 'auto' | 'dark' | 'light'.
 // Pass a real URL in production. The default URL is a demo placeholder.
+// Shared by all ShareSheet instances in this module.
+let bodyScrollLocks = 0
+let bodyOverflowBeforeLock = ''
+function lockBodyScroll() {
+  if (bodyScrollLocks === 0) {
+    bodyOverflowBeforeLock = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+  }
+  bodyScrollLocks += 1
+  let released = false
+  return () => {
+    if (released) return
+    released = true
+    bodyScrollLocks -= 1
+    if (bodyScrollLocks === 0) document.body.style.overflow = bodyOverflowBeforeLock
+  }
+}
+
+// The server and first hydration render both omit the portal.
+const subscribeToMount = () => () => {}
+const getClientMountSnapshot = () => true
+const getServerMountSnapshot = () => false
+
 const sampleUrl = 'https://example.com/story'
 const safeUrl = (value: string) => {
   try { const u = new URL(value); return /^https?:$/.test(u.protocol) ? u.href : '' } catch { return '' }
@@ -63,6 +86,7 @@ function QrArt({ url, size = 170, onReady }: { url: string; size?: number; onRea
 
 export interface ShareSheetProps { url?: string; title?: string; variant?: 'default' | 'message' | 'compact'; theme?: 'auto' | 'dark' | 'light'; initialOpen?: boolean; onShare?: (event: { channel: string; url: string; message: string }) => void }
 export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant = 'default', theme = 'auto', initialOpen = false, onShare }: ShareSheetProps) {
+  const mounted = useSyncExternalStore(subscribeToMount, getClientMountSnapshot, getServerMountSnapshot)
   const [open, setOpen] = useState(initialOpen)
   const [view, setView] = useState<'share' | 'more' | 'qr' | 'copied'>('share')
   const [message, setMessage] = useState('')
@@ -83,9 +107,8 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
   const close = () => { setOpen(false); setView('share'); setFeedback(''); setTimeout(() => returnFocus.current?.focus(), 50) }
   const openDialog = (e: MouseEvent<HTMLButtonElement>) => { returnFocus.current = e.currentTarget; setOpen(true); setView('share'); setFeedback('') }
   useEffect(() => {
-    if (!open) return
-    const old = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    if (!mounted || !open) return
+    const releaseScrollLock = lockBodyScroll()
     const key = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { e.preventDefault(); close(); return }
       if (e.key !== 'Tab') return
@@ -97,18 +120,19 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
     }
     document.addEventListener('keydown', key)
     const timer = setTimeout(() => dialog.current?.querySelector<HTMLButtonElement>('button')?.focus(), 30)
-    return () => { document.body.style.overflow = old; document.removeEventListener('keydown', key); clearTimeout(timer) }
-  }, [open])
-  const copy = async () => {
-    if (!canShare) return
+    return () => { releaseScrollLock(); document.removeEventListener('keydown', key); clearTimeout(timer) }
+  }, [open, mounted])
+  const copy = async (): Promise<boolean> => {
+    if (!canShare) return false
     try {
       if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(link)
       else {
         const el = document.createElement('textarea'); el.value = link; el.style.position = 'fixed'; el.style.opacity = '0'; document.body.append(el); el.select()
-        const ok = document.execCommand('copy'); el.remove(); if (!ok) throw Error('Clipboard unavailable')
+        try { if (!document.execCommand('copy')) throw Error('Clipboard unavailable') } finally { el.remove() }
       }
-      notify('copy'); setView('copied')
-    } catch { setFeedback('Could not copy. Check browser clipboard permission.'); setView('share') }
+      notify('copy'); setFeedback(''); setView('copied')
+      return true
+    } catch { setFeedback('Could not copy. Check browser clipboard permission.'); setView('share'); return false }
   }
   const launch = (channel: string) => {
     if (!canShare) return
@@ -123,7 +147,7 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
     }
     if (channel === 'instagram') {
       if (navigator.share) { navigator.share({ title, text: message.trim() || undefined, url: link }).then(() => notify('instagram')).catch(() => setFeedback('Share canceled or unavailable.')) }
-      else { copy().then(() => { if (navigator.clipboard) setFeedback('Link copied. Paste it in Instagram.') }) }
+      else { copy().then((success) => { if (success) { setView('share'); setFeedback('Link copied. Paste it in Instagram.') } }) }
       return
     }
     const target = targets[channel as keyof typeof targets]
@@ -157,7 +181,7 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
     <span className={`kss-icon kss-${name}`}>{['whatsapp','telegram','x','instagram'].includes(name) ? <Brand name={name as 'whatsapp' | 'telegram' | 'x' | 'instagram'}/> : <Icon name={name} size={20}/>}</span>
     {!isCompact && <span className="kss-label">{label}</span>}
   </button>)
-  const content = open && typeof document !== 'undefined' && createPortal(<div className={`kss-root kss-${resolvedTheme}`} data-theme={resolvedTheme}>
+  const content = mounted && open && createPortal(<div className={`kss-root kss-${resolvedTheme}`} data-theme={resolvedTheme}>
       <motion.div className="kss-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : .2 }} onPointerDown={(e) => { if (e.target === e.currentTarget) close() }} />
       <motion.div ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId} className={`kss-sheet ${isCompact && canShare && view === 'share' ? 'kss-sheet-compact' : ''}`} initial={{ opacity: 0, y: reduced ? 0 : 70, scale: reduced ? 1 : .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduced ? 0 : 50, scale: .98 }} transition={reduced ? { duration: 0 } : sheetTransition}>
         {isCompact && canShare && view === 'share' ? <><span className="kss-sr" id={titleId}>Share</span><div className="kss-compact-row">{controls}</div></> : <>
