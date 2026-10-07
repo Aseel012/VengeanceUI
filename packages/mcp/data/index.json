@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T21:50:01.809Z",
+  "generatedAt": "2026-10-07T09:44:35.146Z",
   "registryBaseUrl": "https://raw.githubusercontent.com/Ashutoshx7/VengeanceUI/main/public/r",
   "categories": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "name": "Interactive",
-      "count": 17
+      "count": 19
     },
     {
       "name": "Layout & Cards",
@@ -1063,6 +1063,101 @@
       "additionalPropSections": null
     },
     {
+      "name": "Share Sheet",
+      "slug": "share-sheet",
+      "componentName": "share-sheet",
+      "category": "Interactive",
+      "description": "Animated share dialog with direct sharing, copy-link feedback, and a downloadable QR code",
+      "isNew": true,
+      "inCatalog": true,
+      "registryDependencies": [
+        "framer-motion",
+        "qrcode-generator"
+      ],
+      "dependencies": "npm install framer-motion qrcode-generator",
+      "includeUtils": null,
+      "manualNotes": [
+        "Pass a public http or https URL. The example URL is a placeholder and must be replaced before production.",
+        "The QR is generated in-browser with qrcode-generator (MIT, Kazuhiko Arase); no API calls or keys are needed.",
+        "Instagram uses native sharing where available, otherwise copies the link so it can be pasted in Instagram. Websites cannot directly save to Photos; download the QR instead.",
+        "Clipboard and native sharing depend on browser permissions. Popup blockers can affect external destinations."
+      ],
+      "usageCode": "import { ShareSheet } from \"@/components/ui/share-sheet\"\n\nexport function ShareExample() {\n  return <ShareSheet url=\"https://your-site.example/story\" title=\"A story worth sharing\" variant=\"message\" />\n}",
+      "props": [
+        {
+          "prop": "url",
+          "type": "string",
+          "defaultValue": "'https://example.com/story'",
+          "description": "Public http(s) link to share; replace the demo URL."
+        },
+        {
+          "prop": "title",
+          "type": "string",
+          "defaultValue": "'Share this page'",
+          "description": "Title used when sharing."
+        },
+        {
+          "prop": "variant",
+          "type": "'default' | 'message' | 'compact'",
+          "defaultValue": "'default'",
+          "description": "Message field or condensed destination row."
+        },
+        {
+          "prop": "theme",
+          "type": "'auto' | 'dark' | 'light'",
+          "defaultValue": "'auto'",
+          "description": "Automatically follows the document's dark class."
+        },
+        {
+          "prop": "initialOpen",
+          "type": "boolean",
+          "defaultValue": "false",
+          "description": "Open immediately when mounted."
+        },
+        {
+          "prop": "onShare",
+          "type": "(event) => void",
+          "defaultValue": "-",
+          "description": "Receives sharing intent with channel, URL, and optional message."
+        }
+      ],
+      "additionalPropSections": null
+    },
+    {
+      "name": "Model Viewer",
+      "slug": "model-viewer",
+      "componentName": "model-viewer",
+      "category": "Interactive",
+      "description": "Interactive 3D model viewer with drag, zoom and keyboard rotation",
+      "isNew": false,
+      "inCatalog": true,
+      "registryDependencies": [],
+      "dependencies": "npm install three @react-three/fiber @react-three/drei clsx tailwind-merge",
+      "includeUtils": true,
+      "manualNotes": [
+        "This is a client component because it renders a WebGL canvas with React Three Fiber.",
+        "Set modelUrl to a .glb file inside your public folder. If the model uses external textures, keep them next to it at the same relative path (for example public/models/Textures/colormap.png).",
+        "Drag to rotate and scroll to zoom. Click the viewer to focus it, then use the arrow keys to rotate.",
+        "The viewer fills its parent's width and is 400px tall by default. Pass className (for example h-[600px]) to change the size."
+      ],
+      "usageCode": "import { ModelViewer } from \"@/components/ui/model-viewer\"\n\nexport function ModelViewerDemo() {\n  return (\n    <ModelViewer\n      modelUrl=\"/models/sample.glb\"\n      className=\"h-[500px]\"\n    />\n  )\n}",
+      "props": [
+        {
+          "prop": "modelUrl",
+          "type": "string",
+          "defaultValue": "'/models/sample.glb'",
+          "description": "Path or URL of the .glb model to display."
+        },
+        {
+          "prop": "className",
+          "type": "string",
+          "defaultValue": "-",
+          "description": "Additional CSS classes for the viewer container."
+        }
+      ],
+      "additionalPropSections": null
+    },
+    {
       "name": "Image Trail",
       "slug": "image-trail",
       "componentName": "image-trail",
@@ -1960,7 +2055,7 @@
       "manualNotes": [
         "Provide a starting image via `src`, and/or let visitors supply their own with the built-in upload control (`allowUpload`, on by default). The uploaded image immediately regenerates the particle pattern.",
         "Bright pixels become particles and dark ones are discarded (tune the cutoff with `threshold`); high-contrast images (light shapes on black) look best.",
-        "Uploaded images are downscaled to `maxDimension` (default 480px) before sampling, so any size stays performant — one kept pixel becomes one particle.",
+        "Uploaded images are downscaled to `maxDimension` (default 320px) before sampling, so any size stays performant — one kept pixel becomes one particle.",
         "External `src` images must be same-origin or CORS-enabled (the component reads pixels via a canvas). Uploaded files are read locally as object URLs, so no CORS applies.",
         "Built on raw Three.js + GSAP (no React Three Fiber). It fills its parent, so give the wrapper an explicit height. Everything — including the WebGL context — is disposed on unmount."
       ],
@@ -1993,7 +2088,7 @@
         {
           "prop": "maxDimension",
           "type": "number",
-          "defaultValue": "480",
+          "defaultValue": "320",
           "description": "Longest edge the source is downscaled to before sampling (caps particle count)."
         },
         {
@@ -2209,7 +2304,7 @@
       "includeUtils": true,
       "manualNotes": [
         "Cards are laid out around a tilted 3D ring with GSAP. The ring auto-rotates gently on its own; drag it to spin, move the cursor to parallax the tilt, and hover a card to lift it and mirror it in the centre preview.",
-        "The original's full-page ScrollTrigger is replaced with drag + auto-rotation, so it works inside any sized container — it fills its parent (`h-full w-full`), so give it an explicit height.",
+        "The original's full-page ScrollTrigger is replaced with drag + auto-rotation. The ring scales to fit its container; it fills its parent (`h-full w-full`), so give it an explicit height.",
         "Pass an `images` array; it's cycled around the ring, so a handful of images fills a large `count`. With no images, neutral placeholder cards are shown. Serve images same-origin (or CORS-enabled) and keep them small — one file is reused many times.",
         "Tune the look with `count`, `radius`, `tilt`, and `itemWidth`/`itemHeight`. Higher `count` means more DOM nodes, so keep it reasonable on low-end devices.",
         "Set `autoRotate={false}` for a static ring, `parallax={false}` to lock the tilt, or `showPreview={false}` to hide the centre image. Adapts to light and dark mode."
@@ -2743,7 +2838,7 @@
         "No animation library — the highlight is a single absolutely-positioned element that transitions its transform, size and background-color as the cursor moves between cells.",
         "Pass `rows` as an array of rows, and each row an array of `{ label, color? }`. Rows can hold different numbers of cells; the grid stretches them evenly.",
         "Each cell gets an accent colour from its own `color`, or from the cycled `colors` palette. The label of the highlighted cell turns white so it stays legible over the colour.",
-        "It fills its parent, so give it a height. The highlight re-aligns on resize, and `highlightFirst` parks it on the first cell on mount.",
+        "The grid uses a wide rectangular frame and scrolls horizontally when its labels need more room. The highlight re-aligns on resize, and `highlightFirst` parks it on the first cell on mount.",
         "The surface is transparent so it sits on whatever background you place it over, with borders and labels that adapt to light and dark mode (the hovered cell's label turns white to stay legible over its colour). Set a background via `className` if you want a solid field. Hover-driven, so on touch devices the highlight simply stays put."
       ],
       "usageCode": "import { HighlightGrid } from \"@/components/ui/highlight-grid\"\n\nexport function HighlightGridDemo() {\n  return (\n    <HighlightGrid\n      rows={[\n        [{ label: \"html\" }, { label: \"css\" }, { label: \"javascript\" }],\n        [{ label: \"react\" }, { label: \"next.js\" }, { label: \"three.js\" }],\n      ]}\n    />\n  )\n}",
@@ -4359,12 +4454,13 @@
       "dependencies": "npm install three clsx tailwind-merge",
       "includeUtils": true,
       "manualNotes": [
-        "Built on raw Three.js (no React Three Fiber needed). It fills its parent, so wrap it in a positioned container with an explicit height.",
+        "Built on raw Three.js (no React Three Fiber needed). It fills its parent and covers the container with square cubes, cropping the outer grid where needed. Give its wrapper an explicit height.",
         "The ripples follow the cursor over the canvas; when the pointer is idle it emits gentle random ripples (toggle with `autoAnimate`).",
+        "Content overlays let pointer movement reach the grid. Add `pointer-events-auto` to any child control that should receive clicks.",
         "The wave motion and peak coloring run in a custom GLSL vertex/fragment shader injected via onBeforeCompile, with a vignette + RGB-shift post-processing pass.",
         "Everything is disposed on unmount (renderer, geometries, materials, textures, listeners), so it is safe to mount and unmount."
       ],
-      "usageCode": "import { WaveGridBackground } from \"@/components/ui/wave-grid-background\"\n\nexport function WaveGridBackgroundDemo() {\n  return (\n    <div className=\"relative h-[520px] w-full overflow-hidden rounded-xl\">\n      <WaveGridBackground colorBase=\"#ffffff\" colorHigh=\"#0055ff\">\n        <div className=\"flex h-full w-full items-center justify-center\">\n          <h2 className=\"text-6xl font-bold text-white drop-shadow-lg\">\n            Wave Grid\n          </h2>\n        </div>\n      </WaveGridBackground>\n    </div>\n  )\n}",
+      "usageCode": "import { WaveGridBackground } from \"@/components/ui/wave-grid-background\"\n\nexport function WaveGridBackgroundDemo() {\n  return (\n    <div className=\"relative h-[520px] w-full overflow-hidden rounded-xl\">\n      <WaveGridBackground colorBase=\"#ffffff\" colorHigh=\"#0055ff\">\n        <div className=\"flex h-full w-full items-center justify-center\">\n          <h2 className=\"text-6xl font-bold text-neutral-950\">\n            Wave Grid\n          </h2>\n        </div>\n      </WaveGridBackground>\n    </div>\n  )\n}",
       "props": [
         {
           "prop": "children",
@@ -5757,6 +5853,18 @@
       "description": null
     },
     {
+      "name": "share-sheet",
+      "type": "registry:ui",
+      "dependencies": [
+        "framer-motion",
+        "qrcode-generator"
+      ],
+      "inCatalog": true,
+      "slug": "share-sheet",
+      "category": "Interactive",
+      "description": "Animated share dialog with direct sharing, copy-link feedback, and a downloadable QR code"
+    },
+    {
       "name": "shared-tooltip-avatars",
       "type": "registry:ui",
       "dependencies": [
@@ -6151,6 +6259,8 @@
       "gooey-text-reveal": "gooey-text-reveal",
       "image-collage": "image-collage",
       "interactive-book": "interactive-book",
+      "share-sheet": "share-sheet",
+      "model-viewer": "model-viewer",
       "image-trail": "image-trail",
       "perspective-carousel": "perspective-carousel",
       "cylinder-carousel": "cylinder-carousel",
@@ -6227,6 +6337,8 @@
       "gooey-text-reveal": "gooey-text-reveal",
       "image-collage": "image-collage",
       "interactive-book": "interactive-book",
+      "share-sheet": "share-sheet",
+      "model-viewer": "model-viewer",
       "image-trail": "image-trail",
       "perspective-carousel": "perspective-carousel",
       "cylinder-carousel": "cylinder-carousel",

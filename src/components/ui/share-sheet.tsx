@@ -115,13 +115,17 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
       const nodes = dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),a[href]')
       if (!nodes?.length) return
       const first = nodes[0], last = nodes[nodes.length - 1]
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      if (!dialog.current?.contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? last : first).focus() }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
     }
     document.addEventListener('keydown', key)
-    const timer = setTimeout(() => dialog.current?.querySelector<HTMLButtonElement>('button')?.focus(), 30)
-    return () => { releaseScrollLock(); document.removeEventListener('keydown', key); clearTimeout(timer) }
+    return () => { releaseScrollLock(); document.removeEventListener('keydown', key) }
   }, [open, mounted])
+  useEffect(() => {
+    if (!mounted || !open || dialog.current?.contains(document.activeElement)) return
+    dialog.current?.querySelector<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),a[href]')?.focus()
+  }, [mounted, open, view])
   const copy = async (): Promise<boolean> => {
     if (!canShare) return false
     try {
@@ -183,7 +187,7 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
   </button>)
   const content = mounted && open && createPortal(<div className={`kss-root kss-${resolvedTheme}`} data-theme={resolvedTheme}>
       <motion.div className="kss-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : .2 }} onPointerDown={(e) => { if (e.target === e.currentTarget) close() }} />
-      <motion.div ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId} className={`kss-sheet ${isCompact && canShare && view === 'share' ? 'kss-sheet-compact' : ''}`} initial={{ opacity: 0, y: reduced ? 0 : 70, scale: reduced ? 1 : .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduced ? 0 : 50, scale: .98 }} transition={reduced ? { duration: 0 } : sheetTransition}>
+      <motion.div ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId} className={`kss-sheet ${isCompact && canShare && view === 'share' ? `kss-sheet-compact ${feedback ? 'kss-sheet-compact-feedback' : ''}` : ''}`} initial={{ opacity: 0, y: reduced ? 0 : 70, scale: reduced ? 1 : .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: reduced ? 0 : 50, scale: .98 }} transition={reduced ? { duration: 0 } : sheetTransition}>
         {isCompact && canShare && view === 'share' ? <><span className="kss-sr" id={titleId}>Share</span><div className="kss-compact-row">{controls}</div></> : <>
           <div className="kss-handle" aria-hidden="true" />
           {view === 'copied' ? <div className="kss-success"><span className="kss-check"><Icon name="check" size={26}/></span><h2 id={titleId}>Link copied!</h2><p>You can now paste it anywhere</p><button type="button" className="kss-done" onClick={close}>Done</button></div> : <>
@@ -191,13 +195,13 @@ export function ShareSheet({ url = sampleUrl, title = 'Share this page', variant
             {view === 'share' && <>{isMessage && <div className="kss-message"><input value={message} maxLength={206} placeholder="Type a message..." onChange={(e) => setMessage(e.target.value)} aria-label="Optional message"/><span>{message.length}/206</span></div>}<div className="kss-grid">{controls}</div></>}
             {view === 'more' && <div className="kss-list">{moreActions.map(([icon, label, fn]) => <button disabled={!canShare} type="button" key={label} onClick={fn}><Icon name={icon} size={19}/><span>{label}</span><Icon name="arrow" size={16}/></button>)}</div>}
             {view === 'qr' && <div className="kss-qr-wrap"><QrArt url={link} onReady={setQrSvg}/><button type="button" disabled={!qrSvg} className="kss-download" onClick={download}><Icon name="download" size={17}/> Download QR</button></div>}
-            {feedback && <p className="kss-feedback" role="status">{feedback}</p>}
             {!canShare && <p className="kss-feedback" role="alert">Pass a valid http or https URL to share.</p>}
           </>}
         </>}
+        {feedback && <p className="kss-feedback" role="status">{feedback}</p>}
       </motion.div>
     </div>, document.body)
-  return <div className={`kss-host kss-host-${resolvedTheme}`}><style>{CSS}</style><button type="button" className="kss-trigger" onClick={openDialog}><Icon name="share" size={20}/> Share</button>{content}</div>
+  return <div className={`kss-host kss-host-${resolvedTheme}`}><style>{CSS}</style><button ref={returnFocus} type="button" className="kss-trigger" onClick={openDialog}><Icon name="share" size={20}/> Share</button>{content}</div>
 }
 
 export default ShareSheet
@@ -211,5 +215,6 @@ const CSS = `
 .kss-backdrop{position:absolute;inset:0;background:#06070bc2;backdrop-filter:blur(4px)}.kss-sheet{position:absolute;left:50%;top:50%;width:min(404px,calc(100vw - 28px));min-height:174px;max-height:min(590px,calc(100dvh - 28px));overflow:auto;transform:translate(-50%,-50%);background:var(--s-bg);border:1px solid var(--s-line);border-radius:25px;box-shadow:0 27px 85px #0009;padding:0 20px 20px}
 /* Motion animates y while the sheet is horizontally centered by left. */
 .kss-sheet{top:auto;bottom:max(22px,calc((100dvh - 430px)/2));margin-left:0;left:calc(50% - min(202px, (100vw - 28px)/2))}.kss-handle{height:4px;width:32px;border-radius:10px;background:var(--s-muted);opacity:.55;margin:9px auto 17px}.kss-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.kss-heading>div{min-width:0}.kss-heading h2{display:inline-block;margin:0;font-size:15px;font-weight:650;line-height:21px;letter-spacing:-.25px}.kss-heading p{margin:3px 0 0;color:var(--s-muted);font-size:11px;line-height:15px}.kss-close,.kss-back{border:0;color:var(--s-text);background:var(--s-elev);border-radius:50%;width:27px;height:27px;display:inline-grid;place-items:center;cursor:pointer}.kss-back{margin-right:8px;width:24px;height:24px}.kss-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}.kss-dest{border:0;border-radius:12px;min-width:0;padding:4px 0 3px;color:var(--s-text);background:transparent;display:flex;align-items:center;flex-direction:column;gap:7px;cursor:pointer;transition:background .15s,transform .15s}.kss-dest:hover,.kss-dest:focus-visible{background:var(--s-elev);transform:translateY(-2px)}.kss-dest:disabled{opacity:.35;cursor:not-allowed}.kss-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--s-icon);border:1px solid var(--s-line);box-shadow:0 3px 9px #0003}.kss-whatsapp{background:#19bf59;border-color:#229c52}.kss-telegram{background:#258ed7;border-color:#4097c9}.kss-x{background:#060709;border-color:#3b3e46}.kss-instagram{background:radial-gradient(circle at 25% 100%,#fbbc45 0%,#ee5554 31%,#d6289b 59%,#742cc4 90%);border-color:#be478f}.kss-label{font-size:10px;white-space:nowrap;letter-spacing:-.22px}.kss-success{text-align:center;padding:22px 0 0}.kss-check{margin:0 auto 14px;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#18c982;color:#091712}.kss-success h2{font-size:16px;margin:0}.kss-success p{color:var(--s-muted);font-size:11px;margin:5px 0 22px}.kss-done,.kss-download{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--s-elev);color:var(--s-text);border:1px solid var(--s-line);border-radius:25px;height:38px;font-size:11px;font-weight:500;font-family:inherit;cursor:pointer}.kss-list{background:var(--s-elev);border-radius:13px;overflow:hidden}.kss-list button{display:flex;align-items:center;gap:12px;width:100%;height:42px;padding:0 13px;background:transparent;color:var(--s-text);border:0;border-bottom:1px solid var(--s-line);text-align:left;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer}.kss-list button:last-child{border-bottom:0}.kss-list button:hover{background:#8882}.kss-list button span{flex:1}.kss-list button>svg:last-child{color:var(--s-muted)}.kss-qr-wrap{display:flex;align-items:center;flex-direction:column;gap:16px;padding:3px 0 1px}.kss-qr-wrap img{background:#fff;padding:6px;box-sizing:content-box;box-shadow:0 7px 18px #0005}.kss-download{max-width:190px}.kss-message{margin:-6px 0 10px}.kss-message input{width:100%;height:35px;background:var(--s-elev);color:var(--s-text);border:1px solid var(--s-line);border-radius:9px;padding:0 11px;font-size:11px;font-family:inherit;outline:0}.kss-message input:focus{border-color:#848891}.kss-message span{display:block;color:var(--s-muted);text-align:right;font-size:10px;margin-top:3px}.kss-feedback{font-size:11px;line-height:1.45;color:var(--s-muted);margin:13px 0 0}.kss-sheet-compact{width:max-content;min-height:0;padding:10px 12px;border-radius:99px;bottom:max(38px,calc((100dvh - 360px)/2));margin-left:0;left:calc(50% - 130px);overflow:visible}.kss-compact-row{display:flex;gap:3px}.kss-compact-row .kss-dest{padding:0 3px}.kss-compact-row .kss-icon{width:35px;height:35px}.kss-compact-row .kss-icon svg{transform:scale(.83)}.kss-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.kss-sheet-compact.kss-sheet-compact-feedback{width:287px;border-radius:20px}
 @media(max-width:440px){.kss-sheet{left:14px;right:14px;bottom:14px;width:auto;margin-left:0}.kss-sheet-compact{left:calc(50% - 130px);right:auto;bottom:25px;width:max-content;margin-left:0}.kss-label{font-size:9px}.kss-icon{width:37px;height:37px}.kss-grid{gap:1px}}
 `

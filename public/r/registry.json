@@ -932,6 +932,17 @@
     ]
   },
   {
+    "name": "share-sheet",
+    "dependencies": [
+      "framer-motion",
+      "qrcode-generator"
+    ],
+    "type": "registry:ui",
+    "files": [
+      "public/r/share-sheet.json"
+    ]
+  },
+  {
     "name": "shared-tooltip-avatars",
     "dependencies": [
       "framer-motion"
