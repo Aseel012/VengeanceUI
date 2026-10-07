@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useCallback, memo, startTransition } from "react";
+import React, { useState, useCallback, useLayoutEffect, useRef, memo } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { COMPONENT_CATEGORIES } from "@/lib/components-catalog";
@@ -56,19 +56,6 @@ const SidebarItem = memo(function SidebarItem({
   isHovered: boolean;
   onHover: (href: string) => void;
 }) {
-  const router = useRouter();
-
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    if (item.external) {
-      return;
-    }
-
-    e.preventDefault();
-    startTransition(() => {
-      router.push(item.href);
-    });
-  }, [item.external, router, item.href]);
-
   return (
     <div
       onMouseEnter={() => onHover(item.href)}
@@ -90,8 +77,9 @@ const SidebarItem = memo(function SidebarItem({
       )}
       <Link
         href={item.href}
-        onClick={item.external ? undefined : handleClick}
+        scroll={false}
         prefetch={false}
+        aria-current={isActive ? "page" : undefined}
         target={item.external ? "_blank" : undefined}
         rel={item.external ? "noopener noreferrer" : undefined}
         className={cn(
@@ -207,7 +195,43 @@ const SidebarCategory = memo(function SidebarCategory({
 
 export function Sidebar() {
   const pathname = usePathname();
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const previousPathname = useRef(pathname);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    const pathChanged = previousPathname.current !== pathname;
+    previousPathname.current = pathname;
+
+    const sidebar = sidebarRef.current?.closest("aside");
+    const activeLink = sidebarRef.current?.querySelector<HTMLElement>('a[aria-current="page"]');
+    if (!sidebar || !activeLink) return;
+
+    const revealActiveLink = () => {
+      if (sidebar.clientHeight === 0) return;
+
+      const sidebarBounds = sidebar.getBoundingClientRect();
+      const linkBounds = activeLink.getBoundingClientRect();
+      const visibleTop = sidebarBounds.top + sidebar.clientTop;
+      const visibleBottom = Math.min(visibleTop + sidebar.clientHeight, window.innerHeight);
+
+      // Move only the sidebar, and leave already-visible links in place.
+      // scrollIntoView would also move the document and undo scroll={false}.
+      if (linkBounds.top < visibleTop + 16 || linkBounds.bottom > visibleBottom - 16) {
+        sidebar.scrollTo({
+          top: sidebar.scrollTop + linkBounds.top - (visibleTop + visibleBottom - linkBounds.height) / 2,
+          behavior: pathChanged && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "smooth"
+            : "instant",
+        });
+      }
+    };
+
+    revealActiveLink();
+    const observer = new ResizeObserver(revealActiveLink);
+    observer.observe(sidebar);
+    return () => observer.disconnect();
+  }, [pathname]);
 
   const handleHover = useCallback((href: string) => {
     setHoveredPath(href);
@@ -219,6 +243,7 @@ export function Sidebar() {
 
   return (
     <div 
+      ref={sidebarRef}
       className="w-full space-y-6 pb-8"
       onMouseLeave={handleMouseLeave}
     >
