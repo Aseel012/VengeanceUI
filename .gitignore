@@ -15,6 +15,8 @@ packages/cli/dist
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
@@ -44,4 +46,3 @@ yarn-error.log*
 next-env.d.ts
 vengeance-ui-v2/
 VengenceUI
-

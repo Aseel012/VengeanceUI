@@ -7,7 +7,7 @@ export default function ComponentsLayout({
 }) {
   return (
     <div className="w-full px-4 md:px-8 flex-1 items-start md:grid md:grid-cols-[220px_24px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_24px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[240px_24px_minmax(0,1fr)_200px]">
-      <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block overflow-y-auto py-6 pr-4">
+      <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block overflow-y-auto overscroll-y-contain py-6 pr-4">
         <Sidebar />
       </aside>
 
